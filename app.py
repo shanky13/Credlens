@@ -36,39 +36,51 @@ def format_inr(number):
 st.title("💳 CredLens")
 st.markdown("### Maximize your rewards. Minimize your fees.")
 
+
+
 # 3. SIDEBAR (DASHBOARD STYLE)
 with st.sidebar:
     st.header("⚙️ Your Financial Profile")
     
-    # Use a container for better spacing
+    # --- INCOME SECTION ---
     with st.container():
         st.subheader("💰 Income")
         salary = st.number_input(
             "Monthly Net Salary", 
             value=50000, 
             step=5000,
-            format="%d"
+            format="%d",  # Forces it to be a clean number (no decimals)
+            help="Enter your take-home pay after taxes."
         )
-        st.caption(f"Annual Salary: {format_inr(salary * 12)}")
+        # THE FIX: Instant feedback below the input
+        st.caption(f"Reading: **{format_inr(salary)}** / month")
+        st.caption(f"Annual: **{format_inr(salary * 12)}** / year")
 
     st.divider()
 
+    # --- SPENDS SECTION ---
     with st.container():
         st.subheader("💸 Monthly Spends")
         
-        # Columns inside sidebar for compact look
         col1, col2 = st.columns(2)
         with col1:
-            spend_online = st.number_input("Online (₹)", value=10000, step=1000)
-            spend_travel = st.number_input("Travel (₹)", value=5000, step=1000)
-        with col2:
-            spend_other = st.number_input("Offline (₹)", value=10000, step=1000)
+            spend_online = st.number_input("Online (₹)", value=10000, step=1000, format="%d")
+            st.caption(f"{format_inr(spend_online)}") # Feedback
             
+            spend_travel = st.number_input("Travel (₹)", value=5000, step=1000, format="%d")
+            st.caption(f"{format_inr(spend_travel)}") # Feedback
+
+        with col2:
+            spend_other = st.number_input("Offline (₹)", value=10000, step=1000, format="%d")
+            st.caption(f"{format_inr(spend_other)}") # Feedback
+            
+        # Total Summary Box
         total_monthly_spend = spend_online + spend_travel + spend_other
         st.info(f"Total Monthly Spend: **{format_inr(total_monthly_spend)}**")
 
     st.divider()
     wants_lounge = st.checkbox("✅ Must have Airport Lounge")
+
 
 # 4. LOGIC ENGINE
 @st.cache_data
