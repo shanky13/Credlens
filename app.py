@@ -58,21 +58,39 @@ with st.sidebar:
 
     st.divider()
 
-    # --- SPENDS SECTION ---
+  # --- SPENDS SECTION ---
     with st.container():
         st.subheader("💸 Monthly Spends")
         
         col1, col2 = st.columns(2)
         with col1:
-            spend_online = st.number_input("Online (₹)", value=10000, step=1000, format="%d")
-            st.caption(f"{format_inr(spend_online)}") # Feedback
+            spend_online = st.number_input(
+                "Online (₹)", 
+                value=10000, 
+                step=1000, 
+                format="%d",
+                help="Amazon, Flipkart, Myntra, Swiggy, Zomato, etc."  # <-- The Question Mark is back
+            )
+            st.caption(f"{format_inr(spend_online)}") 
             
-            spend_travel = st.number_input("Travel (₹)", value=5000, step=1000, format="%d")
-            st.caption(f"{format_inr(spend_travel)}") # Feedback
+            spend_travel = st.number_input(
+                "Travel (₹)", 
+                value=5000, 
+                step=1000, 
+                format="%d",
+                help="Flights, Trains, Hotels, Uber/Ola, etc."         # <-- The Question Mark is back
+            )
+            st.caption(f"{format_inr(spend_travel)}") 
 
         with col2:
-            spend_other = st.number_input("Offline (₹)", value=10000, step=1000, format="%d")
-            st.caption(f"{format_inr(spend_other)}") # Feedback
+            spend_other = st.number_input(
+                "Offline (₹)", 
+                value=10000, 
+                step=1000, 
+                format="%d",
+                help="Groceries, Supermarkets, Store Swipes, Utilities." # <-- The Question Mark is back
+            )
+            st.caption(f"{format_inr(spend_other)}") 
             
         # Total Summary Box
         total_monthly_spend = spend_online + spend_travel + spend_other
