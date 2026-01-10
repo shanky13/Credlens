@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import gspread
+import google.generativeai as genai
 from datetime import datetime
 
 # 1. SETUP & CONFIGURATION
@@ -31,22 +32,60 @@ def format_inr(number):
     amount = "".join([r] + d)
     return f"₹ {amount}"
 
+# --- AI ENGINE (UPDATED) ---
+def get_ai_insight(salary, spends, card_name, savings, spend_online, spend_travel, spend_other, wants_lounge, Fee, reward_rate, reward_type):
+    try:
+        # 1. Configure
+        genai.configure(api_key=st.secrets["general"]["gemini_api_key"])
+        
+        # 2. Model Selection
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        
+        # 3. The Prompt (Optimized Structure)
+        prompt = f"""
+        You are an expert Credit Card Advisor in India.
+        
+        # User Profile
+        - Income: {format_inr(salary)}
+        - Spends: {format_inr(spends)} (Online: {format_inr(spend_online)}, Travel: {format_inr(spend_travel)})
+        - Lounge Need: {"Yes" if wants_lounge else "No"}
+        
+        # The Card: {card_name}
+        - Fee: {format_inr(Fee)}
+        - Reward: {reward_rate}% ({reward_type})
+        - Net Savings: {format_inr(savings)}
+        
+        # Task
+        Write a short, punchy analysis in Markdown format:
+        
+        ### 💳 {reward_type} Card ({reward_rate}% Return)
+        
+        **✅ Why this fits you:**
+        * [Reason 1 based on their highest spend category]
+        * [Reason 2 based on benefits vs fee]
+        
+        **⚠️ One Downside:**
+        * [One logical con based on their profile]
+        
+        Use an encouraging, professional tone. Keep it brief.
+        """
+        
+        # 4. Generate
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"AI Insight unavailable: {str(e)}"
+
 # --- GOOGLE SHEETS CONNECTION ---
 def save_to_google_sheets(salary, online, travel, offline, top_card, savings):
     try:
-        # Connect to Google Sheets using Secrets
         gc = gspread.service_account_from_dict(st.secrets["gcp_service_account"])
-        sh = gc.open("CredLens_Data") # Your Sheet Name
+        sh = gc.open("CredLens_Data")
         worksheet = sh.sheet1
-        
-        # Prepare the Row
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         row = [timestamp, salary, online, travel, offline, top_card, savings]
-        
-        # Append to Sheet
         worksheet.append_row(row)
     except Exception as e:
-        # Fail silently (don't crash the app if internet is slow)
         print(f"Logging failed: {e}")
 
 # 2. HERO SECTION
@@ -56,15 +95,11 @@ st.markdown("### Maximize your rewards. Minimize your fees.")
 # 3. SIDEBAR
 with st.sidebar:
     st.header("⚙️ Your Financial Profile")
-    
     with st.container():
         st.subheader("💰 Income")
-        salary = st.number_input(
-            "Monthly Net Salary", 
-            value=50000, step=5000, format="%d",
-            help="Enter your take-home pay after taxes."
-        )
+        salary = st.number_input("Monthly Net Salary", value=50000, step=5000, format="%d")
         st.caption(f"Reading: **{format_inr(salary)}** / month")
+        st.caption(f"Annual Salary: **{format_inr(salary * 12)}** / year")
 
     st.divider()
 
@@ -72,14 +107,12 @@ with st.sidebar:
         st.subheader("💸 Monthly Spends")
         col1, col2 = st.columns(2)
         with col1:
-            spend_online = st.number_input("Online (₹)", value=10000, step=1000, format="%d", help="Amazon, Flipkart, Swiggy, Zomato")
+            spend_online = st.number_input("Online (₹)", value=10000, step=1000, format="%d")
             st.caption(f"{format_inr(spend_online)}") 
-            
-            spend_travel = st.number_input("Travel (₹)", value=5000, step=1000, format="%d", help="Flights, Trains, Uber/Ola")
+            spend_travel = st.number_input("Travel (₹)", value=5000, step=1000, format="%d")
             st.caption(f"{format_inr(spend_travel)}") 
-
         with col2:
-            spend_other = st.number_input("Offline (₹)", value=10000, step=1000, format="%d", help="Groceries, Dining, Utilities")
+            spend_other = st.number_input("Offline (₹)", value=10000, step=1000, format="%d")
             st.caption(f"{format_inr(spend_other)}") 
             
         total_monthly_spend = spend_online + spend_travel + spend_other
@@ -87,9 +120,19 @@ with st.sidebar:
 
     st.divider()
     wants_lounge = st.checkbox("✅ Must have Airport Lounge")
-    
-    # CALCULATE BUTTON (Important for triggering the log)
     calculate_btn = st.button("Calculate Best Card", type="primary")
+    
+    st.divider()
+    # Debugger (Optional: You can remove this later)
+    with st.expander("🔧 System Debugger"):
+        if st.button("Check Available Models"):
+            try:
+                genai.configure(api_key=st.secrets["general"]["gemini_api_key"])
+                models = [m.name for m in genai.list_models()]
+                st.write("✅ Available Models:")
+                st.write(models)
+            except Exception as e:
+                st.error(f"Connection Failed: {e}")
 
 # 4. LOGIC ENGINE
 @st.cache_data
@@ -102,13 +145,7 @@ def calculate_yield(row):
     annual_online = spend_online * 12
     annual_travel = spend_travel * 12
     annual_other = spend_other * 12
-    
-    raw_reward = (
-        (annual_online * row['Online Rate'] / 100) +
-        (annual_travel * row['Travel Rate'] / 100) +
-        (annual_other * row['Base Rate'] / 100)
-    )
-    
+    raw_reward = ((annual_online * row['Online Rate'] / 100) + (annual_travel * row['Travel Rate'] / 100) + (annual_other * row['Base Rate'] / 100))
     annual_cap = row['Monthly Cap'] * 12
     actual_reward = min(raw_reward, annual_cap)
     return actual_reward - row['Fee']
@@ -116,8 +153,8 @@ def calculate_yield(row):
 # 5. MAIN EXECUTION
 if calculate_btn:
     df['Net Savings'] = df.apply(calculate_yield, axis=1)
-
-    # Filtering
+    
+    # Filter Logic
     valid_cards = df[df['Min Income'] <= salary].copy()
     if wants_lounge:
         valid_cards = valid_cards[valid_cards['Lounge Access'] == 'Yes']
@@ -126,25 +163,34 @@ if calculate_btn:
     if not valid_cards.empty:
         best_card = valid_cards.iloc[0]
         
-        # --- TRIGGER THE LOGGER ---
-        # We perform the save in the background
-        save_to_google_sheets(
-            salary, 
-            spend_online, 
-            spend_travel, 
-            spend_other, 
-            best_card['Card Name'], 
-            int(best_card['Net Savings'])
-        )
+        # Save Data
+        save_to_google_sheets(salary, spend_online, spend_travel, spend_other, best_card['Card Name'], int(best_card['Net Savings']))
         
-        # UI Display (Same as before)
+        # --- UI DISPLAY ---
         st.markdown("---")
         col_winner, col_stats = st.columns([2, 1])
         
         with col_winner:
             st.subheader("🏆 The Best Card for You")
             st.success(f"## {best_card['Card Name']}")
-            st.write(f"Reward Type: **{best_card['Reward Type']}**")
+            
+            # --- AI INSIGHT BUTTON ---
+            with st.spinner("🤖 Asking Gemini for advice..."):
+                # UPDATED: Passing all variables correctly now!
+                insight = get_ai_insight(
+                    salary=salary,
+                    spends=total_monthly_spend,
+                    card_name=best_card['Card Name'],
+                    savings=best_card['Net Savings'],
+                    spend_online=spend_online,
+                    spend_travel=spend_travel,
+                    spend_other=spend_other,
+                    wants_lounge=wants_lounge,
+                    Fee=best_card['Fee'],
+                    reward_rate=best_card.get('Base Rate', 0),
+                    reward_type=best_card.get('Reward Type', 'Points')
+                )
+                st.info(f"**Why this card?**\n\n{insight}")
             
         with col_stats:
             st.metric(label="Annual Net Savings", value=format_inr(best_card['Net Savings']), delta="Profit")
@@ -160,8 +206,20 @@ if calculate_btn:
         ).properties(height=300)
         st.altair_chart(chart, use_container_width=True)
 
+        # --- DATA TABLE (Updated for Sorting) ---
         with st.expander("🔍 See Detailed Breakdown"):
-            st.dataframe(valid_cards[['Card Name', 'Fee', 'Net Savings', 'Lounge Access']], hide_index=True, use_container_width=True)
+            # Create a clean view for the table
+            display_df = valid_cards[['Card Name', 'Fee', 'Net Savings', 'Lounge Access']]
+            
+            st.dataframe(
+                display_df,
+                hide_index=True,
+                use_container_width=True,
+                column_config={
+                    "Fee": st.column_config.NumberColumn(format="₹ %d"),
+                    "Net Savings": st.column_config.NumberColumn(format="₹ %d"),
+                }
+            )
 
     else:
         st.error("😕 No cards found. Try increasing your salary or unchecking 'Lounge Access'.")
