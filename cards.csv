@@ -1,0 +1,9 @@
+Card Name,Fee,Min Income,Reward Type,Base Rate,Online Rate,Dining Rate,Travel Rate,Lounge Access,Monthly Cap
+SBI Cashback,999,25000,Cashback,1.0,5.0,1.0,1.0,No,5000
+HDFC Millennia,1000,30000,Cashback,1.0,5.0,1.0,1.0,Yes,1000
+Axis Ace,499,25000,Cashback,2.0,2.0,2.0,2.0,Yes,999999
+HDFC Infinia,12500,100000,Points,3.3,3.3,3.3,16.5,Yes,999999
+Amex Platinum Travel,5000,50000,Milestone,1.0,1.0,1.0,1.0,Yes,999999
+IDFC First WOW,0,0,Cashback,0.5,0.5,0.5,0.5,No,999999
+Tata Neu Infinity,1499,30000,NeuCoins,1.5,5.0,1.5,1.5,Yes,999999
+Standard Chartered Smart,499,20000,Cashback,2.0,2.0,2.0,2.0,No,1000
