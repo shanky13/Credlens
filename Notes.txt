@@ -1,0 +1,13 @@
+for button:
+
+* **Brand-colored button** – automatically matches the card’s brand color.
+* **Glow effect on hover** – creates a soft halo around the button when hovered.
+* **Lift animation on hover** – button slightly rises for a 3D/interactive feel.
+* **Smooth transition** – color, glow, and movement animate smoothly.
+* **Custom padding, font, and rounded corners** – visually appealing CTA.
+* **Clickable link** – opens the card application page in a new tab.
+* **Fallback color** – uses red if the card brand isn’t in the mapping.
+* **Optional pulse animation** – subtle attention-grabbing effect (can be disabled on hover).
+
+In short: **it creates a modern, interactive, brand-matching “Apply Now” button with glow and hover effects**.
+
