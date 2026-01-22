@@ -10,28 +10,56 @@ print("3. Logic Imported") # <--- Add this
 import data_manager
 print("4. Data Manager Imported") # <--- Add this
 
+# --- 1. MEMORY INITIALIZATION (New) ---
+def init_session_state():
+    # Salary Default
+    if 'salary' not in st.session_state:
+        st.session_state['salary'] = 50000 
 
-# 1. SETUP PAGE (Must be the very first command)
-
-st.set_page_config(page_title="CredLens", page_icon="💳", layout="wide")
-st.title("Trust & Transparency Unlocked") # <--- Visual check on screen
-
-# 2. LOAD CSS (From UI module)
-ui.render_custom_css()
-
-# 3. RENDER HEADER (Your missing piece!)
-ui.render_header()
-
-# 4. LOAD DATA (From Data module)
-df = data_manager.load_card_data()
-
-# 5. RENDER SIDEBAR (And capture inputs)
-# We call the function, and it returns the user's choices
-user_inputs = ui.render_sidebar()
-
-# 6. MAIN LOGIC FLOW
-if user_inputs['calculate_btn']:
+    # Spend Categories Defaults
+    defaults = {
+        'online': 5000,
+        'offline': 2000,
+        'dining': 1000,
+        'travel': 0,
+        'utilities': 2000, 
+        'upi': 1000        
+    }
     
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
+
+    # Filter Defaults
+    if 'filter_lounge' not in st.session_state:
+        st.session_state['filter_lounge'] = False
+
+def main():
+    # 1. SETUP PAGE (Must be the very first command)
+
+    st.set_page_config(page_title="CredLens", page_icon="💳", layout="wide")
+
+    # Initialize Memory
+    init_session_state()
+
+    st.title("Trust & Transparency Unlocked") # <--- Visual check on screen
+
+    # 2. LOAD CSS (From UI module)
+    ui.render_custom_css()
+
+    # 3. RENDER HEADER (Your missing piece!)
+    ui.render_header()
+
+    # 4. LOAD DATA (From Data module)
+    df = data_manager.load_card_data()
+
+    # 5. RENDER SIDEBAR (And capture inputs)
+    # We call the function, and it returns the user's choices
+    user_inputs = ui.render_sidebar()
+
+    # 6. MAIN LOGIC FLOW
+    
+        
     # A. Filter Cards based on Salary
     # (Simple pandas filtering can stay here or move to logic.py)
     valid_cards = df[df['Min Income'] <= user_inputs['salary']].copy()
@@ -63,7 +91,8 @@ if user_inputs['calculate_btn']:
         
         # Get AI Verdict (Using Logic Module - Feature Flag Checked)
         ai_text = None
-        if user_inputs['enable_ai']:
+        
+        if user_inputs["enable_ai"] and user_inputs["ask_ai_clicked"]:
             with st.spinner("🤖 Asking Gemini..."):
                 ai_text = logic.get_ai_verdict(
                     salary=user_inputs['salary'],
@@ -99,6 +128,10 @@ if user_inputs['calculate_btn']:
     else:
         st.error("😕 No cards found for your salary profile.")
 
-else:
-    # Initial State
-    st.info("👈 Enter your details in the sidebar to find your perfect card.")
+    # else:
+    #     # Initial State
+    #     st.info("👈 Enter your details in the sidebar to find your perfect card.")
+
+
+if __name__ == "__main__":
+    main()

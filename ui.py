@@ -142,40 +142,44 @@ def render_sidebar():
     """Renders the sidebar and returns a dictionary of user inputs."""
     with st.sidebar:
         st.header("⚙️ Financial Profile")
-        salary = st.number_input("Monthly Net Salary", value=50000, step=5000, format="%d")
+        salary = st.number_input("Monthly Net Salary", min_value=0, step=5000, key = "salary",format="%d")
         st.divider()
         
         st.subheader("💸 Monthly Spends")
         c1, c2 = st.columns(2)
         with c1:
-            online = st.number_input("Online (₹)", value=10000, step=1000, format="%d")
-            travel = st.number_input("Travel (₹)", value=5000, step=1000, format="%d")
+            online = st.number_input("Online (₹)", min_value=0, max_value=100000, step=1000, key="online", format="%d")
+            travel = st.number_input("Travel (₹)", min_value=0, max_value=100000, step=1000, key="travel", format="%d")
         with c2:
-            offline = st.number_input("Offline (₹)", value=10000, step=1000, format="%d")
+            offline = st.number_input("Offline (₹)", min_value=0, max_value=100000, step=1000, key="offline", format="%d")
 
         
         # NEW: Advanced Section for Specialist Cards
         with st.expander("Advanced Spends (Utilities, UPI)"):
-            utilities = st.number_input("⚡ Utilities (Bills, Recharge)", min_value=0, value=2000, step=500)
-            upi = st.number_input("📱 UPI / Scan & Pay", min_value=0, value=5000, step=500)
+            utilities = st.number_input("⚡ Utilities (Bills, Recharge)", min_value=0, key="utilities", step=500)
+            upi = st.number_input("📱 UPI / Scan & Pay", min_value=0, key="upi", step=500)
         
         total = online + travel + offline + utilities + upi
         st.info(f"Total Monthly Spend: **{format_inr(total)}**")
-        st.divider()
+        
         
         wants_lounge = st.checkbox("✅ Must have Airport Lounge")
-        
+        st.sidebar.markdown("---")
+
         st.markdown("### 🤖 AI Settings")
-        enable_ai = st.toggle("Enable AI Advisor", value=False)
-        
-        calculate = st.button("Calculate Best Card", type="primary")
+        enable_ai = st.sidebar.toggle("Enable AI Advisor", key = "enable_ai", help="Get personalized card recommendations using AI analysis.")
+        ask_ai_clicked = False
+
+        if enable_ai:
+            if st.sidebar.button("🔮 Ask Gemini for Advice"):
+                ask_ai_clicked = True # To indicate button was clicked
         
     return {
         "salary": salary,
         "spends": {"online": online, "travel": travel, "offline": offline, "total": total, "utilities": utilities, "upi": upi},
         "wants_lounge": wants_lounge,
         "enable_ai": enable_ai,
-        "calculate_btn": calculate
+        "ask_ai_clicked": ask_ai_clicked
     }
 
 # 4. RESULTS DISPLAY (The Heavy Lifter)
