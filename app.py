@@ -1,3 +1,5 @@
+import time
+
 import streamlit as st
 print("1. App Started") # <--- Add this
 
@@ -33,6 +35,10 @@ def init_session_state():
     # Filter Defaults
     if 'filter_lounge' not in st.session_state:
         st.session_state['filter_lounge'] = False
+    
+    # Initialize the timer if not present
+    if 'last_save_time' not in st.session_state:    
+        st.session_state['last_save_time'] = 0
 
 def main():
     # 1. SETUP PAGE (Must be the very first command)
@@ -53,9 +59,12 @@ def main():
     # 4. LOAD DATA (From Data module)
     df = data_manager.load_card_data()
 
+    #Get all card names from dropdown
+    all_card_names = df["Card Name"].unique().tolist()
+
     # 5. RENDER SIDEBAR (And capture inputs)
     # We call the function, and it returns the user's choices
-    user_inputs = ui.render_sidebar()
+    user_inputs = ui.render_sidebar(all_card_names)
 
     # 6. MAIN LOGIC FLOW
     
@@ -81,7 +90,37 @@ def main():
     # E. Display Results (If cards exist)
     if not valid_cards.empty:
         best_card = valid_cards.iloc[0]
-        
+
+        ##new comparison logic 
+        comparison_result = None
+        current_card_name = user_inputs.get("current_card_name")
+
+        # Check if user actually selected a card (and not "None")
+        if current_card_name and current_card_name != "I don't have a card":
+
+            # Find the row for the current card in the ORIGINAL dataframe (df)
+            # We use df (not valid_cards) because current card might be "invalid" for new salary
+            current_card_row = df[df['Card Name'] == current_card_name]
+            if not current_card_row.empty:
+                current_card_row = current_card_row.iloc[0]
+
+                
+                # Calculate Net Savings for current card
+                current_card_net_savings = logic.calculate_card_yield(current_card_row, user_inputs['spends'])
+
+                #calculate the diff
+                diff = best_card["Net Savings"] - current_card_net_savings
+
+                
+                # Prepare comparison data
+                # Ignore small differences (noise)
+                if abs(diff) > 100: 
+                    comparison_result = {
+                        "current_card_name": current_card_name,
+                        "diff": int(diff)
+                    }
+
+
         # Calculate Break-Even Stats (Using Logic Module)
         be_stats = logic.calculate_break_even_stats(
             fee=best_card['Fee'], 
@@ -114,16 +153,23 @@ def main():
             ai_verdict=ai_text, 
             valid_cards_df=valid_cards,
             spends = user_inputs["spends"],
-            verdict = verdict
+            verdict = verdict,
+            comparison_data = comparison_result
         )
         
         # Save Lead (Using Data Module)
-        data_manager.save_lead_to_sheets(
-            salary=user_inputs['salary'],
-            spends=user_inputs['spends'],
-            top_card=best_card['Card Name'],
-            savings=int(best_card['Net Savings'])
-        )
+        current_time = time.time()
+        if current_time - st.session_state["last_save_time"]> 10:
+
+            data_manager.save_lead_to_sheets(
+                salary=user_inputs['salary'],
+                spends=user_inputs['spends'],
+                top_card=best_card['Card Name'],
+                savings=int(best_card['Net Savings'])
+            )
+
+            #update the timer
+            st.session_state["last_save_time"] = current_time
         
     else:
         st.error("😕 No cards found for your salary profile.")

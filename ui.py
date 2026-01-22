@@ -138,7 +138,7 @@ def get_brand_color(card_name):
     return "#555555" # Changed to Grey (Neutral) instead of Red (Danger)
 
 # 3. SIDEBAR INPUTS
-def render_sidebar():
+def render_sidebar(card_list):
     """Renders the sidebar and returns a dictionary of user inputs."""
     with st.sidebar:
         st.header("⚙️ Financial Profile")
@@ -163,7 +163,21 @@ def render_sidebar():
         st.info(f"Total Monthly Spend: **{format_inr(total)}**")
         
         
-        wants_lounge = st.checkbox("✅ Must have Airport Lounge")
+        wants_lounge = st.checkbox("✅ Must have Airport Lounge" , key = "filter_lounge")
+
+        # --- NEW SECTION: COMPARISON ---
+        st.divider()
+        st.subheader("🔄 Smart Switch")
+        st.caption("Compare against your current card")
+        
+        # We add "None" as the default option
+        current_card_name = st.selectbox(
+            "I currently use:", 
+            options=["I don't have a card"] + card_list,
+            key="current_card_input"
+        )
+        # -------------------------------
+
         st.sidebar.markdown("---")
 
         st.markdown("### 🤖 AI Settings")
@@ -179,11 +193,12 @@ def render_sidebar():
         "spends": {"online": online, "travel": travel, "offline": offline, "total": total, "utilities": utilities, "upi": upi},
         "wants_lounge": wants_lounge,
         "enable_ai": enable_ai,
-        "ask_ai_clicked": ask_ai_clicked
+        "ask_ai_clicked": ask_ai_clicked,
+        "current_card_name": current_card_name
     }
 
 # 4. RESULTS DISPLAY (The Heavy Lifter)
-def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spends, verdict):
+def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spends, verdict, comparison_data = None):
     """Renders the entire results section (Top Card + Chart + Table)."""
     
     st.markdown("---")
@@ -277,21 +292,57 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
                 {verdict}
             </div>
             """, unsafe_allow_html=True)
-            
-        
-        st.markdown("They rate on features. We rate on **Math**.")
-
 
         # 3. Reward Type 
-        if 'Reward Type' in best_card:
-            st.markdown(f"**Type:** {best_card['Reward Type']}")
+        # if 'Reward Type' in best_card:
+        #     st.markdown(f"**Type:** {best_card['Reward Type']}")
 
+        
         if pd.notna(best_card.get("Warning_Text")):
             st.warning(f"⚠️ {best_card['Warning_Text']}")
         
-        # 4. CARD: Link 
-        search_query = best_card['Card Name'].replace(' ', '+')
-        st.markdown(f"For detailed reviews, [click here](https://www.google.com/search?q={search_query}+reviews).")
+        # --- NEW: COMPARISON ALERT (The Hook) ---
+        if comparison_data:
+            curr_name = comparison_data['current_card_name']
+            diff = comparison_data['diff']
+            
+            if diff > 0:
+            # Positive Diff = The Winner is BETTER (Switch!)
+            
+                # --- DYNAMIC ANALOGY ENGINE ---
+                if diff < 2000:
+                    analogy = "pays for a nice weekend dinner! 🍕"
+                elif diff < 5000:
+                    analogy = "covers your Netflix & WiFi bills for the year! 🎬"
+                elif diff < 10000:
+                    analogy = "effectively pays for a domestic flight! ✈️"
+                elif diff < 25000:
+                    analogy = "is like getting a free Android phone every year! 📱"
+                else:
+                    analogy = "could pay for an international holiday! 🏖️"
+                # ------------------------------
+
+                st.warning(f"💸 **Stop Losing Money!**")
+                st.markdown(f"""
+                <div style="background-color: #fff3cd; color: #155724; padding: 15px; border-radius: 10px; border-left: 5px solid #ffc107; margin-bottom: 20px;">
+                    You are leaving <b>{format_inr(diff)}</b> on the table every year by using <b>{curr_name}</b> instead of <b>{best_card['Card Name']}</b>.
+                    <br>
+                    <small>👉  Switching {analogy}</small>
+                </div>
+                """, unsafe_allow_html=True)
+
+            elif diff < 0: 
+                # Negative Diff = The Current Card is ACTUALLY BETTER than our algorithm's pick?
+                # (Rare, but happens if the user selected a Super Premium card we filtered out by salary, or logic quirks)
+                st.success(f"✅ **Good News!** Your current card ({curr_name}) is actually performing great.")
+        else:
+            st.balloons()
+            st.info(f"""Since you dont have a card, its the best time to go ahead with ✅ {best_card['Card Name']}!""")
+        # ----------------------------------------
+
+        
+
+       
             
     with col_action:
         st.markdown('<div style="padding-top: 15px;"></div>', unsafe_allow_html=True)
@@ -314,6 +365,12 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
                 </a>
             </div>
             """, unsafe_allow_html=True)
+
+        st.markdown("###")
+        st.markdown("They rate on features. We rate on **Math**.")
+        # 4. CARD: Link 
+        search_query = best_card['Card Name'].replace(' ', '+')
+        st.markdown(f"For detailed reviews, [click here](https://www.google.com/search?q={search_query}+reviews).")
 
     # 5. RESTORED: The Math Expander 
     # This now uses the 'spends' argument we added
