@@ -3,3 +3,4 @@ pandas
 altair
 gspread
 google-generativeai
+oauth2client
