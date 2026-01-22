@@ -1,323 +1,104 @@
 import streamlit as st
-import pandas as pd
-import altair as alt
-import gspread
-import google.generativeai as genai
-from datetime import datetime
+print("1. App Started") # <--- Add this
 
-# 1. SETUP & CONFIGURATION
-st.set_page_config(
-    page_title="CredLens | India's Smartest Card Tool",
-    page_icon="💳",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+import ui
+print("2. UI Imported") # <--- Add this
 
-CARD_BRAND_COLORS = {
-    "SBI": "#1C4FA1",
-    "HDFC": "#004C8F",
-    "Axis": "#A6192E",
-    "ICICI": "#F58220",
-    "Amex": "#006FCF",
-    "American Express": "#006FCF",
-    "Standard Chartered": "#0473EA",
-    "IDFC": "#9C1D27",
-    "Tata": "#2B2E34",
-    "Amazon": "#FF9900",
-}
+import logic
+print("3. Logic Imported") # <--- Add this
 
-def get_brand_color(card_name):
-    for brand, color in CARD_BRAND_COLORS.items():
-        if brand.lower() in card_name.lower():
-            return color
-    return "#E53935"  # fallback red
+import data_manager
+print("4. Data Manager Imported") # <--- Add this
 
 
-# Custom CSS (Dark Mode Compatible)
-st.markdown("""
-    <style>
-    .metric-card { background-color: #f0f2f6; padding: 15px; border-radius: 10px; border-left: 5px solid #28a745; }
-    img { border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-height: 200px; object-fit: contain; }
+# 1. SETUP PAGE (Must be the very first command)
+
+st.set_page_config(page_title="CredLens", page_icon="💳", layout="wide")
+st.title("Trust & Transparency Unlocked") # <--- Visual check on screen
+
+# 2. LOAD CSS (From UI module)
+ui.render_custom_css()
+
+# 3. RENDER HEADER (Your missing piece!)
+ui.render_header()
+
+# 4. LOAD DATA (From Data module)
+df = data_manager.load_card_data()
+
+# 5. RENDER SIDEBAR (And capture inputs)
+# We call the function, and it returns the user's choices
+user_inputs = ui.render_sidebar()
+
+# 6. MAIN LOGIC FLOW
+if user_inputs['calculate_btn']:
     
-    /* READABILITY FIX: Force text color for Pros/Cons boxes */
-    .pro-box { 
-        background-color: #e6fffa;
-        display: block;
-        text-align: center;
-        color: #0f5132; 
-        padding: 10px; 
-        border-radius: 5px; 
-        border-left: 4px solid #00b894; 
-        margin:5px auto;    
-    }
-    .con-box { 
-        background-color: #fff5f5; 
-        display: block;
-        text-align: center;
-        color: #842029; 
-        padding: 10px; 
-        border-radius: 5px; 
-        border-left: 4px solid #ff7675; 
-        margin:5px auto;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-def format_inr(number):
-    s, *d = str(int(number)).partition(".")
-    r = ",".join([s[x-2:x] for x in range(-3, -len(s), -2)][::-1] + [s[-3:]])
-    return f"₹ {''.join([r] + d)}"
-
-# --- HYBRID AI ENGINE (Feature Flag Ready) ---
-@st.cache_resource(show_spinner=False)
-def get_ai_verdict(salary, spends, card_name, savings):
-    try:
-        genai.configure(api_key=st.secrets["general"]["gemini_api_key"])
-        # Using the robust Lite model
-        model = genai.GenerativeModel('gemini-2.0-flash-lite-001')
-        
-        prompt = f"""
-        User Spend: {format_inr(spends)}/month. Salary: {format_inr(salary)}.
-        Best Card: {card_name} (Saves {format_inr(savings)}/yr).
-        Task: Write ONE punchy sentence acting as a financial advisor.
-        Keep it under 30 words. No Markdown.
-        """
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception:
-        return None # Silent Fail (Safety Net)
-
-# --- GOOGLE SHEETS CONNECTION ---
-def save_to_google_sheets(salary, online, travel, offline, top_card, savings):
-    try:
-        gc = gspread.service_account_from_dict(st.secrets["gcp_service_account"])
-        sh = gc.open("CredLens_Data")
-        worksheet = sh.sheet1
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        row = [timestamp, salary, online, travel, offline, top_card, savings]
-        worksheet.append_row(row)
-    except Exception:
-        pass 
-
-# 2. UI SECTION
-st.title("💳 CredLens")
-st.markdown("### Maximize your rewards. Minimize your fees.")
-
-# 3. SIDEBAR
-with st.sidebar:
-    st.header("⚙️ Your Financial Profile")
-    salary = st.number_input("Monthly Net Salary", value=50000, step=5000, format="%d")
-    st.divider()
+    # A. Filter Cards based on Salary
+    # (Simple pandas filtering can stay here or move to logic.py)
+    valid_cards = df[df['Min Income'] <= user_inputs['salary']].copy()
     
-    st.subheader("💸 Monthly Spends")
-    col1, col2 = st.columns(2)
-    with col1:
-        spend_online = st.number_input("Online (₹)", value=10000, step=1000, format="%d")
-        spend_travel = st.number_input("Travel (₹)", value=5000, step=1000, format="%d")
-    with col2:
-        spend_other = st.number_input("Offline (₹)", value=10000, step=1000, format="%d")
-    
-    total_monthly_spend = spend_online + spend_travel + spend_other
-    st.info(f"Total Monthly Spend: **{format_inr(total_monthly_spend)}**")
-    st.divider()
-    
-    wants_lounge = st.checkbox("✅ Must have Airport Lounge")
-    
-    # --- FEATURE FLAG ---
-    st.markdown("### 🤖 AI Settings")
-    enable_ai = st.toggle("Enable AI Advisor", value=False, help="Turn on for personalized advice. Consumes quota.")
-    
-    calculate_btn = st.button("Calculate Best Card", type="primary")
-
-# 4. LOGIC ENGINE
-@st.cache_data(ttl=60) 
-def load_data():
-    df = pd.read_csv("cards.csv")
-    df.columns = df.columns.str.strip()
-    
-    # Hybrid Data Safety Defaults
-    if 'Pro_Reason' not in df.columns: df['Pro_Reason'] = "Great cashback rates."
-    if 'Con_Reason' not in df.columns: df['Con_Reason'] = "Check fee waiver limits."
-    if 'Image_URL' not in df.columns: df['Image_URL'] = None
-    if 'Apply_Link' not in df.columns: df['Apply_Link'] = None
-    return df
-
-df = load_data()
-
-def calculate_yield(row):
-    annual_online = spend_online * 12
-    annual_travel = spend_travel * 12
-    annual_other = spend_other * 12
-    raw_reward = ((annual_online * row['Online Rate'] / 100) + (annual_travel * row['Travel Rate'] / 100) + (annual_other * row['Base Rate'] / 100))
-    annual_cap = row['Monthly Cap'] * 12
-    actual_reward = min(raw_reward, annual_cap)
-    return actual_reward - row['Fee']
-
-# 5. MAIN EXECUTION
-if calculate_btn:
-    df['Net Savings'] = df.apply(calculate_yield, axis=1)
-    
-    valid_cards = df[df['Min Income'] <= salary].copy()
-    if wants_lounge:
+    # B. Lounge Filter
+    if user_inputs['wants_lounge']:
         valid_cards = valid_cards[valid_cards['Lounge Access'] == 'Yes']
-    valid_cards = valid_cards.sort_values(by='Net Savings', ascending=False)
 
+    # C. Calculate Rewards for every card (Using Logic Module)
+    # We apply the pure math function to every row
+    valid_cards['Net Savings'] = valid_cards.apply(
+        lambda row: logic.calculate_card_yield(row, user_inputs['spends']), 
+        axis=1
+    )
+    
+    # D. Sort Winners
+    valid_cards = valid_cards.sort_values(by='Net Savings', ascending=False)
+    
+    # E. Display Results (If cards exist)
     if not valid_cards.empty:
         best_card = valid_cards.iloc[0]
-        save_to_google_sheets(salary, spend_online, spend_travel, spend_other, best_card['Card Name'], int(best_card['Net Savings']))
         
-        # --- UI: 3-COLUMN LAYOUT ---
-        st.markdown("---")
-
-        # Columns: Analysis (Left) | Spacer | Stats (Middle) | Action (Right)
-        col_text, col_spacer, col_stats, col_action = st.columns([2, 0.2, 1.2, 1.2])
+        # Calculate Break-Even Stats (Using Logic Module)
+        be_stats = logic.calculate_break_even_stats(
+            fee=best_card['Fee'], 
+            net_savings=best_card['Net Savings'], 
+            user_total_annual_spend=user_inputs['spends']['total']
+        )
         
-        # COL 1: ANALYSIS & HYBRID CONTENT
-        with col_text:
-            col_l , col_c , col_r = st.columns([0.1,2,0.1])
-            with col_c:
-                st.markdown(f"### 🏆 {best_card['Card Name']}", text_alignment="center")
-                metric_col1 , metric_col2, metric_col3 = st.columns(3)
-                with metric_col1:
-                    st.metric(label="Annual Net Savings", value=format_inr(best_card['Net Savings']), delta="Profit")
-                with metric_col2:
-                    st.metric(label="Annual Fee", value=format_inr(best_card['Fee']))
-                with metric_col3:
-                    st.metric(label="Base Reward Rate", value=f"{best_card['Base Rate']}%")
-
-                # Static Content (Instant Load)
-                st.markdown(f"""
-                <div class="pro-box"><b>✅ The Good:</b> {best_card['Pro_Reason']}</div>
-                <div style="margin-top: 5px;"></div>
-                <div class="con-box"><b>⚠️ The Bad:</b> {best_card['Con_Reason']}</div>
-                """, unsafe_allow_html=True)
-            
-            # Dynamic AI (Controlled by Feature Flag)
-            if enable_ai:
-                st.markdown("###")
-                with st.spinner("🤖 Advisor thinking..."):
-                     ai_verdict = get_ai_verdict(salary, total_monthly_spend, best_card['Card Name'], best_card['Net Savings'])
-                if ai_verdict:
-                    st.info(f"🤖 **Advisor:** {ai_verdict}")
-                else:
-                    st.caption("⚠️ AI Napping (Quota). Pros/Cons are accurate.")
-
-        # COL 2: HARD STATS
-        with col_stats:
-            st.markdown('<div style="padding-top: 10px;"></div>', unsafe_allow_html=True)
-            st.metric(label="Paisabazar rating", value= "⭐⭐⭐")
-            st.metric(label="Cred rating", value= "⭐⭐⭐")
-            st.metric(label="Reddit rating", value= "⭐⭐⭐⭐")
-            
-            if 'Reward Type' in best_card:
-                st.caption(f"Type: {best_card['Reward Type']}")
-            st.markdown(f" For detailed reviews, click [here](https://www.google.com/search?q={best_card['Card Name'].replace(' ', '+')}+reviews).")
-
-        # COL 3: IMAGE & ACTION
-        with col_action:
-            st.markdown('<div style="padding-top: 15px;"></div>', unsafe_allow_html=True)
-            if pd.notna(best_card['Image_URL']) and str(best_card['Image_URL']).startswith('http'):
-                st.image(best_card['Image_URL'], use_container_width=True)
-            else:
-                st.markdown("<h1 style='text-align: center; font-size: 80px;'>💳</h1>", unsafe_allow_html=True)
-            
-            # Button Stacked Below Image
-            link = best_card.get('Apply_Link')
-            if pd.notna(link) and str(link).strip() != "":
-                st.markdown('<div style="padding-top: 5px;"></div>', unsafe_allow_html=True)
-                 #st.link_button("🔗 Apply Now", str(link), type="primary", use_container_width=True,)
-                brand_color = get_brand_color(best_card["Card Name"])
-
-                # 4️⃣ Display the Apply button with pulse + glow + hover effect
-                # Apply button with pulse + hover glow
-                # -----------------------------
-                # ALIGNMENT FIX: Center button under image
-                # -----------------------------
-                st.markdown(
-                    f"""
-                    <div style="text-align:center;"> <!-- Centering container -->
-                        <a href="{best_card['Apply_Link']}" target="_blank">
-                            <button class="apply-btn" style="
-                                background:{brand_color};
-                                color:white;
-                                padding:14px 28px;
-                                border:none;
-                                border-radius:12px;
-                                font-size:16px;
-                                font-weight:600;
-                                cursor:pointer;
-                                transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-                                animation: pulse 1.8s infinite alternate; /* Pulse animation */
-                            ">
-                                🔗 Apply Now
-                            </button>
-                        </a>
-                    </div>
-
-                    <style>
-                    /* Hover effect stops pulse and adds glow */
-                    .apply-btn:hover {{
-                        animation: none; /* Stop pulse on hover */
-                        transform: translateY(-2px) scale(1.05);
-                        box-shadow: 0 0 20px {brand_color}66;
-                        filter: brightness(1.1);
-                    }}
-
-                    /* Lightweight pulse animation */
-                    @keyframes pulse {{
-                        0% {{ transform: scale(1); opacity: 0.9; }}
-                        100% {{ transform: scale(1.05); opacity: 1; }}
-                    }}
-                    </style>
-                    """,
-                    unsafe_allow_html=True
+        # Get AI Verdict (Using Logic Module - Feature Flag Checked)
+        ai_text = None
+        if user_inputs['enable_ai']:
+            with st.spinner("🤖 Asking Gemini..."):
+                ai_text = logic.get_ai_verdict(
+                    salary=user_inputs['salary'],
+                    spends=user_inputs['spends']['total'],
+                    card_name=best_card['Card Name'],
+                    savings=best_card['Net Savings']
                 )
-                 
 
-        # --- RESTORED: MATH EXPLANATION ---
-        st.markdown("---")
-        with st.expander("🧮 How did we calculate this? (The Math)"):
-            st.markdown(f"""
-            **The Formula:**
-            We projected your spending over **12 months** and applied the card's specific reward rates.
-            
-            * **Online Spends:** {format_inr(spend_online * 12)} × **{best_card['Online Rate']}%**
-            * **Travel Spends:** {format_inr(spend_travel * 12)} × **{best_card['Travel Rate']}%**
-            * **Offline Spends:** {format_inr(spend_other * 12)} × **{best_card['Base Rate']}%**
-            
-            **Net Calculation:** `(Total Rewards - Annual Fee {format_inr(best_card['Fee'])}) = {format_inr(best_card['Net Savings'])}`
-            *Note: We also accounted for monthly capping limits.*
-            """)
+        # 1. Calculate the Verdict (NEW)
+        verdict = logic.get_credlens_verdict(
+            net_savings=best_card['Net Savings'],
+            fee=best_card['Fee']
+        )
 
-        # --- COMPARISON CHART ---
-        st.subheader("📊 Profitability Comparison")
-        chart_data = valid_cards.head(5).copy()
-        chart = alt.Chart(chart_data).mark_bar(cornerRadiusTopRight=10, cornerRadiusBottomRight=10).encode(
-            x=alt.X('Net Savings', title='Net Annual Value (₹)'),
-            y=alt.Y('Card Name', sort='-x', title=None),
-            color=alt.Color('Net Savings', scale=alt.Scale(scheme='greens'), legend=None),
-            tooltip=['Card Name', 'Net Savings', 'Fee']
-        ).properties(height=300)
-        st.altair_chart(chart, use_container_width=True)
-
-        # --- DATA TABLE ---
-        with st.expander("🔍 See Detailed Breakdown"):
-            display_cols = ['Card Name', 'Fee', 'Net Savings', 'Lounge Access']
-            if 'Apply_Link' in valid_cards.columns:
-                display_cols.append('Apply_Link')
-                
-            st.dataframe(
-                valid_cards[display_cols],
-                hide_index=True,
-                use_container_width=True,
-                column_config={
-                    "Fee": st.column_config.NumberColumn(format="₹ %d"),
-                    "Net Savings": st.column_config.NumberColumn(format="₹ %d"),
-                    "Apply_Link": st.column_config.LinkColumn("Apply")
-                }
-            )
-
+        # RENDER THE RESULTS (Using UI Module)
+        ui.render_results(
+            best_card=best_card, 
+            break_even_stats=be_stats, 
+            ai_verdict=ai_text, 
+            valid_cards_df=valid_cards,
+            spends = user_inputs["spends"],
+            verdict = verdict
+        )
+        
+        # Save Lead (Using Data Module)
+        data_manager.save_lead_to_sheets(
+            salary=user_inputs['salary'],
+            spends=user_inputs['spends'],
+            top_card=best_card['Card Name'],
+            savings=int(best_card['Net Savings'])
+        )
+        
     else:
-        st.error("😕 No cards found.")
+        st.error("😕 No cards found for your salary profile.")
+
 else:
-    st.info("👈 Enter your details in the sidebar and click 'Calculate Best Card'")
+    # Initial State
+    st.info("👈 Enter your details in the sidebar to find your perfect card.")

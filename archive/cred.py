@@ -285,3 +285,36 @@ if calculate_btn:
         st.error("😕 No cards found. Try increasing your salary or unchecking 'Lounge Access'.")
 else:
     st.info("👈 Enter your details in the sidebar and click 'Calculate Best Card'")
+
+
+
+#extra code for model list
+# with st.expander("🛠️ Model Diagnostics (Debug)"):
+    #     if st.button("List Available Models"):
+    #         try:
+    #             # 1. Connect
+    #             client = genai.Client(api_key=st.secrets["general"]["gemini_api_key"])
+                
+    #             # 2. Fetch Models
+    #             all_models = client.models.list()
+                
+    #             # 3. Filter for "Generative" models only
+    #             # We look for models that support 'generateContent'
+    #             gen_models = []
+    #             for m in all_models:
+                    
+    #                 gen_models.append({
+    #                 "Name": m.name,
+    #                 "Display": m.display_name,
+    #                 "Limit": "Check Studio" # API doesn't share live quota :(
+    #                 })
+                
+    #             # 4. Show as Table
+    #             if gen_models:
+    #                 st.success(f"Found {len(gen_models)} active models!")
+    #                 st.dataframe(pd.DataFrame(gen_models), hide_index=True)
+    #             else:
+    #                 st.warning("No generative models found.")
+                    
+    #         except Exception as e:
+    #             st.error(f"Fetch failed: {str(e)}")
