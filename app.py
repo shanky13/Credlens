@@ -24,8 +24,8 @@ def init_session_state():
         'offline': 2000,
         'dining': 1000,
         'travel': 0,
-        'utilities': 2000, 
-        'upi': 1000        
+        'utilities': 0, 
+        'upi': 0        
     }
     
     for key, value in defaults.items():
@@ -39,6 +39,15 @@ def init_session_state():
     # Initialize the timer if not present
     if 'last_save_time' not in st.session_state:    
         st.session_state['last_save_time'] = 0
+
+    if 'age' not in st.session_state:
+        st.session_state['age'] = 25
+
+    if 'cibil' not in st.session_state:
+        st.session_state['cibil'] = 700
+    
+# --- 2. MAIN APPLICATION FLOW ---
+    
 
 def main():
     # 1. SETUP PAGE (Must be the very first command)
@@ -91,34 +100,54 @@ def main():
     if not valid_cards.empty:
         best_card = valid_cards.iloc[0]
 
-        ##new comparison logic 
+        # --- NEW: SMART COMPARISON LOGIC (3 Scenarios) ---
         comparison_result = None
-        current_card_name = user_inputs.get("current_card_name")
+        current_card_name = user_inputs.get('current_card_name')
+        
+        # SCENARIO 1: User has NO card (The Nudge)
+        if current_card_name == "I don't have a card":
+            comparison_result = {
+                "type": "no_card"
+                
+            }
+            
+        # SCENARIO 2: User ALREADY has the Winner (The Validation)
+        elif current_card_name == best_card['Card Name']:
+             comparison_result = {
+                "type": "same_card"
+                
+            }
 
-        # Check if user actually selected a card (and not "None")
-        if current_card_name and current_card_name != "I don't have a card":
-
-            # Find the row for the current card in the ORIGINAL dataframe (df)
-            # We use df (not valid_cards) because current card might be "invalid" for new salary
+        # SCENARIO 3: User has a DIFFERENT card (The Switch Math)
+        elif current_card_name:
+            # Find the row for the current card in the ORIGINAL dataframe
+            
             current_card_row = df[df['Card Name'] == current_card_name]
+            # Apply lounge filter if needed
+            if user_inputs['wants_lounge']:
+                current_card_row = current_card_row[current_card_row['Lounge Access'] == 'Yes'] 
+            
             if not current_card_row.empty:
                 current_card_row = current_card_row.iloc[0]
-
                 
-                # Calculate Net Savings for current card
-                current_card_net_savings = logic.calculate_card_yield(current_card_row, user_inputs['spends'])
-
-                #calculate the diff
-                diff = best_card["Net Savings"] - current_card_net_savings
-
+                # Run the Math
+                current_savings = logic.calculate_card_yield(current_card_row, user_inputs['spends'])
+                current_card_lounge = current_card_row['Lounge Access']
+                diff = best_card['Net Savings'] - current_savings
                 
-                # Prepare comparison data
-                # Ignore small differences (noise)
-                if abs(diff) > 100: 
+                # Only show if there's a real difference
+                if abs(diff) > 100 and current_card_lounge: 
                     comparison_result = {
+                        "type": "switch",
                         "current_card_name": current_card_name,
-                        "diff": int(diff)
+                        "diff": int(diff),
+                        "current_savings": int(current_savings) 
                     }
+            else:
+                comparison_result = {
+                    "type": "no_card_lounge",
+                    "current_card_name": current_card_name
+                }
 
 
         # Calculate Break-Even Stats (Using Logic Module)
@@ -154,7 +183,10 @@ def main():
             valid_cards_df=valid_cards,
             spends = user_inputs["spends"],
             verdict = verdict,
-            comparison_data = comparison_result
+            comparison_data = comparison_result,
+            approval_odds = .91,
+            age = user_inputs["age"],
+            credit_score = user_inputs["credit_score"]
         )
         
         # Save Lead (Using Data Module)

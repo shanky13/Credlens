@@ -1,13 +1,474 @@
 for button:
-
-* **Brand-colored button** – automatically matches the card’s brand color.
-* **Glow effect on hover** – creates a soft halo around the button when hovered.
-* **Lift animation on hover** – button slightly rises for a 3D/interactive feel.
-* **Smooth transition** – color, glow, and movement animate smoothly.
-* **Custom padding, font, and rounded corners** – visually appealing CTA.
-* **Clickable link** – opens the card application page in a new tab.
-* **Fallback color** – uses red if the card brand isn’t in the mapping.
-* **Optional pulse animation** – subtle attention-grabbing effect (can be disabled on hover).
-
 In short: **it creates a modern, interactive, brand-matching “Apply Now” button with glow and hover effects**.
 
+
+Ideas;
+
+1.Added rating from diff platforms like bank bazaar redits or add general sentiment from actual users.
+2. Can also add feature of devaluation currently happened or not
+
+
+list of models:
+models/embedding-gecko-001
+models/gemini-2.5-flash
+models/gemini-2.5-pro
+models/gemini-2.0-flash-exp
+models/gemini-2.0-flash
+models/gemini-2.0-flash-001
+models/gemini-2.0-flash-exp-image-generation
+models/gemini-2.0-flash-lite-001
+models/gemini-2.0-flash-lite
+models/gemini-2.0-flash-lite-preview-02-05
+models/gemini-2.0-flash-lite-preview
+models/gemini-exp-1206
+models/gemini-2.5-flash-preview-tts
+models/gemini-2.5-pro-preview-tts
+models/gemma-3-1b-it
+models/gemma-3-4b-it
+models/gemma-3-12b-it
+models/gemma-3-27b-it
+models/gemma-3n-e4b-it
+models/gemma-3n-e2b-it
+models/gemini-flash-latest
+models/gemini-flash-lite-latest
+models/gemini-pro-latest
+models/gemini-2.5-flash-lite
+models/gemini-2.5-flash-image-preview
+models/gemini-2.5-flash-image
+models/gemini-2.5-flash-preview-09-2025
+models/gemini-2.5-flash-lite-preview-09-2025
+models/gemini-3-pro-preview
+models/gemini-3-flash-preview
+models/gemini-3-pro-image-preview
+models/nano-banana-pro-preview
+models/gemini-robotics-er-1.5-preview
+models/gemini-2.5-computer-use-preview-10-2025
+models/deep-research-pro-preview-12-2025
+
+
+This is a **very solid sidebar already** 👍
+You’re not far at all. I’ll guide you **step-by-step**, like I would with a PM + engineer in a design review.
+
+I’ll keep this **structured, incremental, and low-risk** so you can ship without refactoring everything.
+
+---
+
+# 🔑 Big Picture (Before Steps)
+
+Right now you are:
+
+* Asking for **raw CIBIL score**
+* But your model logic works on **score bands**
+
+So the goal is:
+
+> **Normalize user inputs → derive eligibility → compute probability**
+
+We do this in **4 clean layers**, not inside the UI.
+
+---
+
+# STEP 0 — Do *NOT* Change the UI (Yet)
+
+Your current inputs are **perfect** for v1.
+
+You already collect:
+
+* Age ✅
+* Credit score (raw) ✅
+* Salary ✅
+
+We’ll **derive everything else downstream**.
+
+---
+
+# STEP 1 — Convert Raw Credit Score → Score Band
+
+### Why?
+
+* Users understand numbers
+* Model needs **bands**
+* This avoids asking twice
+
+### Add a helper function (pure logic, no Streamlit)
+
+```python
+def get_score_band(cibil):
+    if cibil < 650:
+        return "B1"
+    elif cibil < 700:
+        return "B2"
+    elif cibil < 750:
+        return "B3"
+    else:
+        return "B4"
+```
+
+### Use it once after sidebar returns data
+
+```python
+user_score_band = get_score_band(user_inputs["cibil"])
+```
+
+⚠️ **Do NOT show this band to the user yet**
+This is internal logic only.
+
+---
+
+# STEP 2 — Add 2 Card Attributes (One-Time Data Change)
+
+In your card CSV / dataframe, add:
+
+```text
+Eligible_Score_Band   (already added)
+Card_Risk_Tier        (ENTRY | MAINSTREAM | PREMIUM | SUPER_PREMIUM)
+Is_Secured            (Yes / No)
+```
+
+This is **critical** — don’t try to infer this at runtime.
+
+---
+
+# STEP 3 — Hard Eligibility Gate (Must Happen First)
+
+Before probability, do **binary filtering**.
+
+### Logic
+
+```python
+def is_eligible(user, card):
+    if user["age"] < card["Min_Age"]:
+        return False
+    if user["score_band"] < card["Eligible_Score_Band"]:
+        return False
+    return True
+```
+
+### Why this matters
+
+* Prevents showing impossible cards
+* Keeps probability meaningful
+* Reduces user frustration
+
+---
+
+# STEP 4 — Base Probability (Score Match Only)
+
+This is the **anchor**. Everything else adjusts it.
+
+```python
+def base_probability(user_band, card_band):
+    diff = ord(user_band[-1]) - ord(card_band[-1])
+
+    if diff == 0:
+        return 0.55
+    elif diff == 1:
+        return 0.70
+    else:
+        return 0.85
+```
+
+⚠️ Never start higher than 55%.
+
+---
+
+# STEP 5 — Income Fit Adjustment (Soft, Not a Gate)
+
+### Compute ratio
+
+```python
+income_ratio = user_salary / card_min_income
+```
+
+### Adjustment
+
+```python
+def income_adjustment(ratio):
+    if ratio < 1:
+        return -0.20
+    elif ratio < 1.5:
+        return 0.0
+    elif ratio < 3:
+        return 0.05
+    else:
+        return 0.10
+```
+
+⚠️ **Income should never override score mismatch**
+
+---
+
+# STEP 6 — Card Risk Adjustment (Issuer Selectivity)
+
+```python
+def card_risk_adjustment(card):
+    if card["Is_Secured"] == "Yes":
+        return 0.20
+
+    tier = card["Card_Risk_Tier"]
+    if tier == "ENTRY":
+        return 0.10
+    elif tier == "MAINSTREAM":
+        return 0.0
+    elif tier == "PREMIUM":
+        return -0.05
+    else:  # SUPER_PREMIUM
+        return -0.10
+```
+
+This reflects **real issuer behaviour**.
+
+---
+
+# STEP 7 — Final Probability Assembly
+
+```python
+def compute_approval_probability(user, card):
+    base = base_probability(user["score_band"], card["Eligible_Score_Band"])
+    income_adj = income_adjustment(user["salary"] / card["Min_Income"])
+    risk_adj = card_risk_adjustment(card)
+
+    prob = base + income_adj + risk_adj
+
+    # Clamp safely
+    prob = max(0.05, min(prob, 0.90))
+
+    return round(prob * 100)
+```
+
+This function should:
+
+* Live **outside Streamlit**
+* Be testable
+* Be deterministic
+
+---
+
+# STEP 8 — UX Layer (Very Important)
+
+### ❌ Do NOT show raw % first
+
+Start with labels.
+
+```python
+def probability_label(pct):
+    if pct < 40:
+        return "Low"
+    elif pct < 65:
+        return "Moderate"
+    else:
+        return "High"
+```
+
+### UI Copy (Safe)
+
+> “Approval likelihood is an estimate based on your profile and public eligibility criteria.”
+
+---
+
+# STEP 9 — Where This Fits in Your App Flow
+
+```text
+Sidebar Inputs
+   ↓
+Normalize (Score → Band)
+   ↓
+Eligibility Filter
+   ↓
+Probability Calculation
+   ↓
+Ranking + Recommendation
+```
+
+Do **not** mix these layers.
+
+---
+
+# 🔒 Risk & Compliance Checklist (You’re Doing This Right)
+
+✅ No bureau pull
+✅ No promise language
+✅ Conservative caps
+✅ Explainable logic
+✅ User-controlled inputs
+
+This will survive:
+
+* Bank partner review
+* Legal review
+* User trust scrutiny
+
+---
+
+# Final PM Advice
+
+If this were my product:
+
+* I’d **ship this without AI**
+* Watch funnel drop-offs
+* Tune weights silently
+* Add AI *later* as narrative layer
+
+---
+
+## Next (Tell Me What You Want)
+
+1. I’ll **map your existing cards** to `Card_Risk_Tier`
+2. I’ll **write unit tests** for the probability function
+3. I’ll help you **rank cards by “Expected Value × Approval”**
+4. Or help you **design the UX copy**
+
+You’re building this properly.
+
+
+
+Perfect! Let’s outline this like a **product + engineering blueprint** so we can implement it cleanly. I’ll cover **UX, backend logic, scoring, probability, and edge cases**.
+
+---
+
+## **Step-by-Step Plan for Approval Probability**
+
+---
+
+### **Step 1: User Input (Frontend / Sidebar)**
+
+**Goal:** Collect only the essential info safely.
+
+**Inputs:**
+
+| Field          | Widget                        | Notes                                                               |
+| -------------- | ----------------------------- | ------------------------------------------------------------------- |
+| Age            | number_input                  | Min 18, Max 100                                                     |
+| Credit Score   | dropdown                      | Options: `300–499`, `500–649`, `650–749`, `750–900` (maps to B1–B4) |
+| Monthly Salary | number_input                  | Optional for high-risk cards                                        |
+| Monthly Spend  | number_input / grouped inputs | Online, Offline, Travel, Utilities, UPI                             |
+| Wants Lounge   | checkbox                      | Boolean for filtering premium cards                                 |
+
+**Logic Notes:**
+
+* Map dropdown → `Eligible_Score_Band` internally:
+
+```python
+score_band_map = {
+    "300–499": "B1",
+    "500–649": "B2",
+    "650–749": "B3",
+    "750–900": "B4"
+}
+```
+
+* Optional: “Advanced Mode” for exact score (only for analytics).
+
+---
+
+### **Step 2: Preprocessing (Backend)**
+
+**Goal:** Normalize all user inputs for scoring.
+
+1. Map age → check minimum age (CSV `Min_Age`). If user < Min_Age → probability = 0%.
+2. Map CIBIL dropdown → internal `user_band`.
+3. Optional: normalize monthly salary/spends to match card `Min_Income` or reward cap logic.
+4. Create **user profile object**:
+
+```python
+user_profile = {
+    "age": 25,
+    "score_band": "B3",
+    "salary": 50000,
+    "spends": {"online": 10000, "travel": 5000, "offline": 8000, "utilities": 2000, "upi": 1500},
+    "wants_lounge": True
+}
+```
+
+---
+
+### **Step 3: Approval Probability Logic**
+
+**Goal:** Determine likelihood of approval using **risk band match + other filters**.
+
+**Algorithm (Stepwise):**
+
+1. **Check Hard Rejections:**
+
+   * Age < `Min_Age` → 0%
+   * Card is secured (`Is_Secured=Yes`) → require FD / collateral, probability = low if not provided
+   * Salary < `Min_Income` → low probability
+
+2. **Risk Band Comparison:**
+
+   * Map user band vs card `Eligible_Score_Band`:
+
+| User Band | Card Band | Probability      |
+| --------- | --------- | ---------------- |
+| B1        | B1        | Medium           |
+| B1        | B2/B3/B4  | Very Low (5–10%) |
+| B2        | B2        | Medium           |
+| B2        | B3        | Low              |
+| B2        | B4        | Very Low         |
+| B3        | B3        | High             |
+| B3        | B4        | Medium           |
+| B4        | B4        | Very High        |
+| B4        | B1/B2/B3  | Very High        |
+
+*(Adjust percentages in final implementation: e.g., 90–95% = Very High, 70–80% = High, 40–60% = Medium, 10–30% = Low, <10% = Very Low)*
+
+3. **Optional Spend / Lifestyle Adjustment:**
+
+   * If `wants_lounge=True` and card has lounge → boost probability by +5–10%
+   * If user spend meets card reward cap → boost probability slightly
+
+4. **Return structured probability object**:
+
+```python
+{
+    "card_name": "SBI Cashback",
+    "approval_probability": "High",
+    "probability_pct": 75,
+    "reason": "User score matches card band, age OK"
+}
+```
+
+---
+
+### **Step 4: Ranking / Display**
+
+1. Filter cards by:
+
+   * Lounge requirement (`wants_lounge`)
+   * Optional salary / income check
+2. Sort by:
+
+   * Approval probability (High → Low)
+   * Market rating (tie-breaker)
+3. Display in **streamlit table** with probability column.
+
+---
+
+### **Step 5: Edge Cases / Safety**
+
+* User selects **lowest band (B1)** → only show entry-level cards
+* User selects **highest band (B4)** → show premium/super premium cards
+* Age < Min_Age → show warning instead of 0% silently
+* If card is secured → show info popup: “Requires FD / collateral”
+
+---
+
+### **Step 6: Optional Advanced Features**
+
+1. AI-based dynamic scoring: adjust probability using salary, spends, and behavior patterns
+2. Add **confidence score** for borderline approvals
+3. Historical analytics for accepted/rejected users (if data available)
+
+---
+
+✅ **Outcome:**
+
+* Users see cards they are likely to get approved for
+* Reduces risk of recommending cards beyond their eligibility
+* Supports **drop-down UX** that’s user-friendly and safe
+
+---
+
+If you want, I can **next draft the Streamlit implementation for the dropdown + probability mapping** using your CSV. That will be a fully working code snippet.
+
+Do you want me to do that?

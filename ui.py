@@ -24,16 +24,19 @@ def render_custom_css():
     .con-box { background-color: #fff5f5; color: #842029; padding: 10px; border-radius: 5px; border-left: 4px solid #ff7675; margin:5px auto; }
     
     /* --- 2. STATUS BADGES (THIS IS WHAT YOU ASKED ABOUT) --- */
-    .status-badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8em; margin-left: 10px; }
+    .status-badge { padding: 4px 8px; border-radius: 130px; font-weight: bold; font-size: 0.8em; margin-left: 5px; }
     
     /* 🔥 HOT: Gold/Yellow */
     .status-hot { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+    .status-hot::after { content: " 🔥"; font-size: 0.8em; }
     
     /* 🔻 DEVALUED: Red/Danger (CONFIRMED) */
     .status-devalued { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .status-devalued::after { content: " 🔻"; font-size: 0.8em; } 
     
     /* ✅ STABLE: Green/Safe */
     .status-stable { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .status-stable::after { content: " ✅"; font-size: 0.8em; }
                 
     /* --- NEW: BUTTON ANIMATION STYLES --- */
     
@@ -142,28 +145,36 @@ def render_sidebar(card_list):
     """Renders the sidebar and returns a dictionary of user inputs."""
     with st.sidebar:
         st.header("⚙️ Financial Profile")
-        salary = st.number_input("Monthly Net Salary", min_value=0, step=5000, key = "salary",format="%d")
+        
+        h1,h2 = st.columns(2)
+
+        with h1 :
+            age = st.number_input("Age" , min_value = 10 , max_value = 100 , key = "age")
+        with h2 :
+            credit_score = st.number_input("Credit Score" , min_value = 300 , max_value = 900 , key = "cibil" , help="\nTo get the credit score for free :  \nGpay :Home > scroll to bottom > Check your CIBIL score.  \nPhonepe: Home > Credit Score")
+
+        salary = st.number_input("Monthly Net Salary", min_value=0, step=5000, key = "salary",format="%d", help="Your take-home pay after taxes and deductions.")
         st.divider()
         
         st.subheader("💸 Monthly Spends")
         c1, c2 = st.columns(2)
         with c1:
-            online = st.number_input("Online (₹)", min_value=0, max_value=100000, step=1000, key="online", format="%d")
-            travel = st.number_input("Travel (₹)", min_value=0, max_value=100000, step=1000, key="travel", format="%d")
+            online = st.number_input("Online (₹)", min_value=0, max_value=100000, step=1000, key="online", format="%d", help="E-commerce, Subscriptions, Bill Payments")
+            travel = st.number_input("Travel (₹)", min_value=0, max_value=100000, step=1000, key="travel", format="%d" , help="Flights, Hotels, Cabs")
         with c2:
-            offline = st.number_input("Offline (₹)", min_value=0, max_value=100000, step=1000, key="offline", format="%d")
+            offline = st.number_input("Offline (₹)", min_value=0, max_value=100000, step=1000, key="offline", format="%d" , help="In-store, Dining, Groceries")
 
         
         # NEW: Advanced Section for Specialist Cards
         with st.expander("Advanced Spends (Utilities, UPI)"):
-            utilities = st.number_input("⚡ Utilities (Bills, Recharge)", min_value=0, key="utilities", step=500)
-            upi = st.number_input("📱 UPI / Scan & Pay", min_value=0, key="upi", step=500)
+            utilities = st.number_input("⚡ Utilities (Bills, Recharge)", min_value=0, key="utilities", step=500 , help="Electricity, Water, Mobile Bills")
+            upi = st.number_input("📱 UPI / Scan & Pay", min_value=0, key="upi", step=500 , help="UPI transactions, QR payments")
         
         total = online + travel + offline + utilities + upi
         st.info(f"Total Monthly Spend: **{format_inr(total)}**")
         
         
-        wants_lounge = st.checkbox("✅ Must have Airport Lounge" , key = "filter_lounge")
+        wants_lounge = st.checkbox(" ✈️ Must have Airport Lounge" , key = "filter_lounge" , help="Filter cards that offer complimentary airport lounge access.")
 
         # --- NEW SECTION: COMPARISON ---
         st.divider()
@@ -174,7 +185,7 @@ def render_sidebar(card_list):
         current_card_name = st.selectbox(
             "I currently use:", 
             options=["I don't have a card"] + card_list,
-            key="current_card_input"
+            key="current_card_input" , help="Select your current primary credit card for comparison."
         )
         # -------------------------------
 
@@ -189,6 +200,8 @@ def render_sidebar(card_list):
                 ask_ai_clicked = True # To indicate button was clicked
         
     return {
+            "age": age,
+            "credit_score": credit_score,
         "salary": salary,
         "spends": {"online": online, "travel": travel, "offline": offline, "total": total, "utilities": utilities, "upi": upi},
         "wants_lounge": wants_lounge,
@@ -198,7 +211,7 @@ def render_sidebar(card_list):
     }
 
 # 4. RESULTS DISPLAY (The Heavy Lifter)
-def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spends, verdict, comparison_data = None):
+def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spends, verdict, comparison_data = None,age = 10 , credit_score = 700, approval_odds = 0):
     """Renders the entire results section (Top Card + Chart + Table)."""
     
     st.markdown("---")
@@ -245,13 +258,14 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
                 st.progress(float(percent_recovered))
                 
                 if percent_recovered >= 1.0:
-                    st.caption("✅ Fee fully recovered.")
+                    st.caption("✅ Congratulations! For current spend Fee is fully recovered.")
                 else:
                     st.caption(f"⚠️ You need to earn **{format_inr(best_card['Fee'] - (best_card['Net Savings'] + best_card['Fee']))}** more to recover the fee.")
             
             # --- SMART LOGIC END ---
 
             # Pros/Cons
+            st.markdown("Why This Card?")
             st.markdown(f"""
             <div class="pro-box"><b>✅ The Good:</b> {best_card['Pro_Reason']}</div>
             <div class="con-box"><b>⚠️ The Bad:</b> {best_card['Con_Reason']}</div>
@@ -301,43 +315,65 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
         if pd.notna(best_card.get("Warning_Text")):
             st.warning(f"⚠️ {best_card['Warning_Text']}")
         
-        # --- NEW: COMPARISON ALERT (The Hook) ---
+        # --- NEW: SMART CONTEXTUAL ALERTS ---
         if comparison_data:
-            curr_name = comparison_data['current_card_name']
-            diff = comparison_data['diff']
-            
-            if diff > 0:
-            # Positive Diff = The Winner is BETTER (Switch!)
-            
-                # --- DYNAMIC ANALOGY ENGINE ---
-                if diff < 2000:
-                    analogy = "pays for a nice weekend dinner! 🍕"
-                elif diff < 5000:
-                    analogy = "covers your Netflix & WiFi bills for the year! 🎬"
-                elif diff < 10000:
-                    analogy = "effectively pays for a domestic flight! ✈️"
-                elif diff < 25000:
-                    analogy = "is like getting a free Android phone every year! 📱"
-                else:
-                    analogy = "could pay for an international holiday! 🏖️"
-                # ------------------------------
+        
+            # 1. THE "NO CARD" NUDGE
+            if comparison_data['type'] == 'no_card':
+                st.info(f"🚀 **Get Best Card Now:** Start your credit card journey with  **{best_card['Card Name']}!** " )
 
-                st.warning(f"💸 **Stop Losing Money!**")
-                st.markdown(f"""
-                <div style="background-color: #fff3cd; color: #155724; padding: 15px; border-radius: 10px; border-left: 5px solid #ffc107; margin-bottom: 20px;">
-                    You are leaving <b>{format_inr(diff)}</b> on the table every year by using <b>{curr_name}</b> instead of <b>{best_card['Card Name']}</b>.
-                    <br>
-                    <small>👉  Switching {analogy}</small>
-                </div>
-                """, unsafe_allow_html=True)
+            # 2. THE "SAME CARD" VALIDATION
+            elif comparison_data['type'] == 'same_card':
+                st.success(f"🎉 **Great Job!** You already own the **{best_card['Card Name']}**. You are maximizing your returns!")
 
-            elif diff < 0: 
-                # Negative Diff = The Current Card is ACTUALLY BETTER than our algorithm's pick?
-                # (Rare, but happens if the user selected a Super Premium card we filtered out by salary, or logic quirks)
-                st.success(f"✅ **Good News!** Your current card ({curr_name}) is actually performing great.")
-        else:
-            st.balloons()
-            st.info(f"""Since you dont have a card, its the best time to go ahead with ✅ {best_card['Card Name']}!""")
+            # 3. THE "SAME CARD" VALIDATION
+            elif comparison_data['type'] == 'no_card_lounge':
+                st.success(f"⚠️ **Your card:** **{comparison_data['current_card_name']}** does not provide lounge access! switch to **{best_card['Card Name']}** to enjoy complimentary lounges. 🛫")
+
+            # 3. THE "SWITCH" WARNING (Existing Logic)
+            elif comparison_data['type'] == 'switch':
+                curr_name = comparison_data['current_card_name']
+                diff = comparison_data['diff']
+
+                if diff > 0:
+                # Positive Diff = The Winner is BETTER (Switch!)
+                
+                    # --- DYNAMIC ANALOGY ENGINE ---
+                    if diff < 2000:
+                        analogy = "pays for a nice weekend dinner! 🍕"
+                    elif diff < 5000:
+                        analogy = "covers your Netflix & WiFi bills for the year! 🎬"
+                    elif diff < 10000:
+                        analogy = "effectively pays for a domestic flight! ✈️"
+                    elif diff < 25000:
+                        analogy = "is like getting a free Android phone every year! 📱"
+                    elif diff == 0:
+                        analogy = "Great choice!!"
+                    else:
+                        analogy = "could pay for an international holiday! 🏖️"
+                    # ------------------------------
+
+                    st.warning(f"💸 **Stop Losing Money!**")
+                    st.markdown(f"""
+                    <div style="background-color: #fff3cd; color: #155724; padding: 15px; border-radius: 10px; border-left: 5px solid #ffc107; margin-bottom: 20px;">
+                        You are leaving <b>{format_inr(diff)}</b> on the table every year by using <b>{curr_name}</b> instead of <b>{best_card['Card Name']}</b>.
+                        <br>
+                        <small>👉  Switching {analogy}</small>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                elif diff < 0: 
+                    # Negative Diff = The Current Card is ACTUALLY BETTER than our algorithm's pick?
+                    # (Rare, but happens if the user selected a Super Premium card we filtered out by salary, or logic quirks)
+                    st.success(f"✅ **Good News!** Your current card ({curr_name}) is actually performing great. as the diff is {diff} and current savings is {comparison_data['current_savings']}. Keep using it!")
+
+            approval = st.button("Click here for your approval oods", key="approval_button")
+            if approval:
+                st.balloons()
+                st.info(f"Based on your credit score of {credit_score} , your approval odds for {best_card['Card Name']} is approximately {approval_odds*100:.1f}% .")
+        #else:
+            #st.balloons()
+            #st.info(f"""Its the best time to go ahead with ✅ {best_card['Card Name']}!""")
         # ----------------------------------------
 
         
