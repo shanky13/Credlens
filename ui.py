@@ -249,18 +249,28 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
             else:
                 # CASE 2: Normal Card (Do the math)
                 # Calculate percent recovered (capped at 100% for the bar)
-                percent_recovered = min(best_card['Net Savings'] + best_card['Fee'], best_card['Fee']) / best_card['Fee']
+                annual_reward = best_card['Net Savings'] + best_card['Fee']
+                annual_reward = max(0, annual_reward)  # Ensure reward is not negative
+
+                percent_recovered = min(annual_reward/ (best_card['Fee'] ), 1.0)
                 
-                # Guardrail: Ensure it doesn't crash if something goes wrong, though Fee != 0 covers it
-                if percent_recovered < 0: percent_recovered = 0
-                
-                bar_color = "green" if percent_recovered >= 1.0 else "red"
                 st.progress(float(percent_recovered))
                 
                 if percent_recovered >= 1.0:
-                    st.caption("✅ Congratulations! For current spend Fee is fully recovered.")
+                    st.caption("✅ Congratulations! For current spend Fee is fully recovered in an year.")
                 else:
-                    st.caption(f"⚠️ You need to earn **{format_inr(best_card['Fee'] - (best_card['Net Savings'] + best_card['Fee']))}** more to recover the fee.")
+                    st.caption(f"ℹ️ Your rewards recover **{int(percent_recovered*100)}%** of the annual fee.")
+
+            if best_card['Fee'] > 0 and annual_reward > 0:
+                monthly_rewards = annual_reward / 12
+                months_to_break_even = best_card['Fee'] / monthly_rewards
+
+                if months_to_break_even <= 12:
+                    st.caption(
+                    f"⏱️ At current monthly spending, you will break even in **{int(months_to_break_even)} months**.")
+                else:
+                    st.caption("⚠️ At current spending, you may not recover the fee within a year.")
+
             
             # --- SMART LOGIC END ---
 
@@ -367,7 +377,7 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
                     # (Rare, but happens if the user selected a Super Premium card we filtered out by salary, or logic quirks)
                     st.success(f"✅ **Good News!** Your current card ({curr_name}) is actually performing great. as the diff is {diff} and current savings is {comparison_data['current_savings']}. Keep using it!")
 
-            approval = st.button("Click here for your approval oods", key="approval_button")
+            approval = st.button("Click here for your approval odds", key="approval_button")
             if approval:
                 st.balloons()
                 st.info(f"Based on your credit score of {credit_score} , your approval odds for {best_card['Card Name']} is approximately {approval_odds*100:.1f}% .")
