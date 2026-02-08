@@ -4,9 +4,6 @@ import pandas as pd
 from logic import format_inr # We reuse the formatter
 
 # In ui.py
-  
-                        
-
 
 def render_header():
     """Renders the main page title and subtitle."""
@@ -15,7 +12,7 @@ def render_header():
     #st.markdown("### Understand what your credit card is actually worth")
     st.markdown("""
     <h1 style="font-size:42px; font-weight: 600;">CredLens</h1>
-    <h3 style="font-size: 28px; font-weight: 500; color: #E5E7EB">Understand what your credit card is actually worth</h3>
+    <h3 style="font-size: 28px; font-weight: 500; color: #FAFAFA">Understand what your credit card is actually worth</h3>
     <div class="hero-subtext">
     Based on how you spend — not generic rankings.
     </div>
@@ -47,80 +44,6 @@ def sidebar_section_header(title):
 def render_custom_css():
     st.markdown("""
     <style>
-    /* ---------- New UI theme ---------- */             
-    :root {
-    --bg-surface: #111827;
-    --bg-elevated: #1F2937;
-    --border-subtle: #374151;
-
-    --text-primary: #E5E7EB;
-    --text-secondary: #9CA3AF;
-
-    --accent-blue: #3B82F6;
-    --accent-red: #EF4444;
-    --accent-green: #22C55E;
-    }
-    /* ---------- Section Header ---------- */
-    .section-header {
-        font-size: 22px;
-        font-weight: 600;
-        color: var(--text-primary);
-        border-left: 4px solid var(--accent-blue);
-        padding: 8px 14px;
-        margin: 12px 0;
-        background-color: var(--bg-elevated);
-        border-radius: 6px;
-    }
-
-    /* ---------- Alert Box ---------- */
-    .alert-box {
-        background-color: var(--bg-elevated);
-        border: 1px solid var(--border-subtle);
-        border-left: 4px solid;
-        padding: 16px;
-        border-radius: 10px;
-        margin: 14px 0;
-    }
-
-    .alert-title {
-        font-size: 14px;
-        font-weight: 600;
-        text-transform: uppercase;
-        margin-bottom: 6px;
-    }
-
-    .alert-muted {
-        font-size: 14px;
-        color: var(--text-secondary);
-    }
-
-    /* Alert variants */
-    .alert-info { border-left-color: var(--accent-blue); }
-    .alert-warning { border-left-color: var(--accent-red); }
-    .alert-success { border-left-color: var(--accent-green); }
-
-    /* ---------- Metric Card ---------- */
-    .metric-card {
-        background-color: var(--bg-elevated);
-        border: 1px solid var(--border-subtle);
-        border-radius: 10px;
-        padding: 14px;
-    }
-
-    .metric-label {
-        font-size: 13px;
-        color: var(--text-secondary);
-    }
-
-    .metric-value {
-        font-size: 24px;
-        font-weight: 600;
-        color: var(--text-primary);
-    }
-
-    /* ---------- New UI theme close ---------- */
-                
-    
     /* 1. LAYOUT & SPACING FIXES */
     .block-container {
         padding-top: 1rem !important; /* Reduce top whitespace */
@@ -163,21 +86,15 @@ def render_custom_css():
         135deg,
         #111827 0%,
         #1F2937 100%
-        );
+    );
     border: 1px solid #374151;
-     /* muted red */
+    border-left: 4px solid #EF4444; /* muted red */
     color: #E5E7EB;
     padding: 16px 18px;
-    border-radius: 15px;
+    border-radius: 10px;
     margin: 16px 0;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
     }
-                
-    
-    
-    .money-alert-warning { border-left: 4px solid  var(--accent-red); }
-    .money-alert-success { border-left: 4px solid  var(--accent-green); }
-
 
     .money-alert-title {
         font-size: 15px;
@@ -189,7 +106,7 @@ def render_custom_css():
     }
 
     .money-alert strong {
-        color: #FCA5A5;
+        color: #F87171;
     }
 
     .money-alert-muted {
@@ -198,24 +115,27 @@ def render_custom_css():
         margin-top: 6px;
     }
 
-    /* Highlight best card */
-    .highlight-card {
-    color: #22C55E;      /* green accent */
-    font-weight: 700;     /* bold */
-    font-size: 18px;      /* slightly bigger */
     }
+    .money-alert strong { color: #533f03; }
 
-
-
+    /* 4. THE "WINNER CARD" GLOW */
+    # .winner-container {
+    #     border: 1px solid #e0e0e0;
+    #     border-radius: 12px;
+    #     padding: 20px;
+    #     background-color: white;
+    #     box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Subtle shadow */
+    #     transition: transform 0.2s;
+    # }
     
     /* 5. EXISTING STYLES (Kept intact) */
-    .status-badge { margin: 0 8px; padding: 5px 10px ; border-radius: 999px; font-weight: bold; font-size: 0.75em; vertical-align: middle; }
-    .status-hot { background-color: #FEF3C7; color: #78350F; border: 1px solid #ffeeba; }
+    .status-badge { margin: 0 2px; padding: 5px 10px ; border-radius: 15px; font-weight: bold; font-size: 0.75em; vertical-align: middle; }
+    .status-hot { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
     .status-devalued { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     .status-stable { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
 
-    .pro-box {  padding: 10px; border-radius: 6px;border: 0px solid #00b894; border-left: 0px solid #00b894; margin: 8px 0; font-size: 18px;display: block;opacity  : 0.9;} /*background-color: #e6fffa; color: #0f5132; */
-    .con-box {  padding: 10px; border-radius: 6px;border: 0px solid #ff7675; border-left: 0px solid #ff7675; margin: 8px 0; font-size: 18px;display: block; opacity: 0.9;} /* background-color: #fff5f5; color: #842029; */
+    .pro-box { background-color: #e6fffa; color: #0f5132; padding: 10px; border-radius: 6px; border-left: 4px solid #00b894; margin: 8px 0; font-size: 18px;display: block;}
+    .con-box { background-color: #fff5f5; color: #842029; padding: 10px; border-radius: 6px; border-left: 4px solid #ff7675; margin: 8px 0; font-size: 18px;display: block; }
 
     /* Pulse Button */
     @keyframes pulse {
@@ -238,74 +158,19 @@ def render_custom_css():
     .apply-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
     
     /* Verdict Boxes */
-    .verdict-box { padding: 8px 14px; border-radius: 999px; text-align: center; font-weight: bold; font-size: 18px;display: inline-block;opacity: 0.85;}
+    .verdict-box { padding: 5px 10px; border-radius: 6px; text-align: center; font-weight: bold; font-size: 20px;display: inline-block; }
     .v-danger { background-color: #fdf2f2; color: #d9534f; border: 1px solid #f5c6cb; }
-    .v-success { background-color: #D1FAE5;; color: #28a745; border: 1px solid #c3e6cb; }
+    .v-success { background-color: #eafbf1; color: #28a745; border: 1px solid #c3e6cb; }
     .v-neutral { background-color: #f8f9fa; color: #6c757d; border: 1px solid #dee2e6; }
-    
+    </style>
                 
-    /* 6. TIGHTER DIVIDERS - Not working , I guess */
+    /* 6. TIGHTER DIVIDERS - Not working , I guess*/
     hr {
         margin-top: 0rem !important;    /* Default is ~2rem */
         margin-bottom: 0rem !important; /* Default is ~2rem */
         border-top: 1px solid #e0e0e0;    /* Optional: Make it subtle/lighter */
     }
-    </style>
     """, unsafe_allow_html=True)
-
-def render_section_header(title: str):
-    st.markdown(
-        f'<div class="section-header">{title}</div>',
-        unsafe_allow_html=True
-    )
-
-
-def render_alert(title: str, body: str, variant: str = "info", muted: str = None):
-    """
-    Renders a styled alert box in Streamlit.
-    
-    Parameters:
-    - title: str -> Main alert title
-    - body: str -> HTML/Markdown body text (bold using <strong> or Markdown)
-    - variant: str -> "info" | "warning" | "success" (affects border & title color)
-    - muted: str -> Optional secondary text below the body, smaller and muted
-    """
-    
-    # Map variant to colors (border-left & title)
-    color_map = {
-        "info": "#3B82F6",     # Blue
-        "warning": "#EF4444",  # Red
-        "success": "#22C55E",  # Green
-    }
-    
-    title_color = color_map.get(variant, "#3B82F6")
-    
-    muted_html = f'<div class="alert-muted" style="margin-top:8px;">{muted}</div>' if muted else ""
-    
-    st.markdown(f"""
-    <div class="alert-box alert-{variant}">
-        <div class="alert-title" style="color:{title_color};">
-            {title}
-        </div>
-        <div>{body}</div>
-        {muted_html}
-    </div>
-    """, unsafe_allow_html=True)
-
-
-def render_metric_card(label: str, value: str):
-    st.markdown(
-        f"""
-        <div class="metric-card">
-            <div class="metric-label">{label}</div>
-            <div class="metric-value">{value}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-
 
     # --- 5. METRIC LABEL FIX (Prevents "Annual Net S...") ---
     st.markdown("""
@@ -440,7 +305,7 @@ def render_sidebar(card_list):
         }
         </style>
         """, unsafe_allow_html=True)
-        calculate_button = st.button("🔍 See my Recommendations", key="calculate_btn")
+        calculate_button = st.button("🔍 See My Recommendations", key="calculate_btn")
 
 
 
@@ -471,24 +336,24 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
     """Renders the entire results section (Top Card + Chart + Table)."""
     
     #st.markdown("---")
-    with st.container(border=False):
+    with st.container(border=True):
         st.markdown(
         f"""
             <div style="
-                color: #E0E7FF;
+                color: #E0E0E0 ;
                 display: inline-block; 
-                border: 0px solid #3A2D52; 
-                border-radius: 999px; 
-                font-size: 18px;
-                font-weight: 600;
-                padding: 8px 14px; 
-                margin: 3px 20px;   /* Controlled margin */
+                border: 1px solid #3A2D52; 
+                border-radius: 15px; 
+                font-size: 26px;
+                font-weight: 500;
+                padding: 13px 22px; 
+                margin: 3px 0px;       /* Controlled margin */
                 line-height: 1.2;      /* Centers text vertically */
-                background-color: #1E1B4B; /* Subtle background */
+                background-color: #1B132B; /* Subtle background */
                 ">
-                Best Card based on your spending 
+                Section &#49;. Best Card based on your spending 
             </div>
-            """, text_alignment= "left",unsafe_allow_html=True
+            """, text_alignment= "center",unsafe_allow_html=True
                 )
 
         col_det,col_gap,col_action = st.columns([3,0.3,2])
@@ -497,18 +362,18 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
             status = best_card.get("Status", "Stable")
             s_class = f"status-{status.lower()}" if status.lower() else "stable"
                 
-            st.markdown(f"<span style='display: inline-block;font-size: 38px;font-weight: 600;padding: 2px ;margin-top: 2px;color: #F9FAFB;letter-spacing: -0.2px;margin-bottom: 8px;'>➤ {best_card['Card Name']} 🏆  <span class='status-badge {s_class}'>{status}</span></span>",text_alignment= "left", unsafe_allow_html=True)
+            st.markdown(f"<span style='display: inline-block;font-size: 38px;font-weight: 500;padding: 2px ;margin-top: 2px;color:#C0C0C0; '>🏆 {best_card['Card Name']} <span class='status-badge {s_class}'>{status}</span></span>",text_alignment= "center", unsafe_allow_html=True)
                 
             annual_net_saving = best_card['Net Savings']
             delta_text = "Money in your pocket" if annual_net_saving >= 0 else "Cost to you"
                 
-            st.markdown(f"""<h4> <span style='color: {"#22C55E" if annual_net_saving >= 0 else "#d9534f"};display: inline-block;font-size: 42px;border: 0.0px solid #ccc; border-radius: 15px; padding: 5px;padding-left: 60px;font-weight:700 '>{format_inr(annual_net_saving)}/year</span></h4>""" ,text_alignment= "left",  unsafe_allow_html=True)
-            st.markdown(f"""<div class="hero-subtext" style = "padding-left: 40px;font-weight:400;color:#9CA3AF;margin-bottom:16px; ">💰 What you actually gain after fees</div>""" ,text_alignment= "left", unsafe_allow_html=True)
+            st.markdown(f"""<h4> <span style='color: {"#2ECC71" if annual_net_saving >= 0 else "#d9534f"};display: inline-block;font-size: 42px;border: 0.0px solid #ccc; border-radius: 15px; padding: 5px;'>{format_inr(annual_net_saving)}/year</span></h4>""" ,text_alignment= "center",  unsafe_allow_html=True)
+            st.markdown(f"""<div class="hero-subtext">💰 What you actually gain after fees</div>""" ,text_alignment= "center", unsafe_allow_html=True)
 
-            with st.container(border=False):
-                #st.markdown(f"""<h4>✔ Great for High Salaried with focus on Travel</h4>""" ,text_alignment= "center", unsafe_allow_html=True)
-                st.markdown(f"""<h5 style='color:#E5E7EB;;font-weight:500;padding-left: 0px;'>✔ A reasonable choice given your current usage</h5>""" ,text_alignment= "left", unsafe_allow_html=True)
-                #st.markdown(f"""<h4>✔ Kharredle na Bhai!!</h4>""" ,text_alignment= "center", unsafe_allow_html=True)
+            with st.container(border=True):
+                st.markdown(f"""<h4>✔ Great for High Salaried with focus on Travel</h4>""" ,text_alignment= "center", unsafe_allow_html=True)
+                st.markdown(f"""<h4>✔ Fair value for your lifestyle</h4>""" ,text_alignment= "center", unsafe_allow_html=True)
+                st.markdown(f"""<h4>✔ Kharredle na Bhai!!</h4>""" ,text_alignment= "center", unsafe_allow_html=True)
 
         with col_action:
             st.markdown('<div style="padding-top: 15px;"></div>', unsafe_allow_html=True)
@@ -518,9 +383,8 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
                 st.markdown("""
                     <style>
                     .stImage > img {
-                        max-width:280px
                         border-radius: 15px;      /* Rounded edges */
-                        box-shadow: 0 8px 30px 0 rgba(0,0,0,0.4); /* Subtle depth */
+                        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Subtle depth */
                         transition: 0.3s;
                         
                     }
@@ -539,7 +403,7 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
                 
                 # We inject the style and class here
                 st.markdown(f"""
-                <div style="text-align:center; margin-top:16px;font-size:15px;font-weight:600";padding:12px 20px;border-radius:10px;>
+                <div style="text-align:center; margin:0px;">
                     <a href="{link}" target="_blank" style="text-decoration:none;">
                         <button class="apply-btn" style="background-color: {color}; width: 50%;">
                             🔗 Apply Now
@@ -547,37 +411,33 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
                     </a>
                 </div>
                 """, unsafe_allow_html=True)
-                st.caption("**Affiliate link, no extra cost to you.**",text_alignment= "center")
             st.write("")
 
             # 4. CARD: Link 
             search_query = best_card['Card Name'].replace(' ', '+')
             #st.markdown(f"For detailed reviews, [click here](https://www.google.com/search?q={search_query}+reviews).")
-    st.divider()
-    st.write("")
     
 
             
-    with st.container(border=False):
+    with st.container(border=True):
         
         st.markdown(
         f"""
             <div style="
-                color: #E5E7EB;
+                color: #E0E0E0 ;
                 display: inline-block; 
-                border: 3px solid #3A2D52; 
-                border-radius: 999px; 
-                border-left: 4px solid #ccc ;
-                font-size: 20px;
-                font-weight: 600;
+                border: 1px solid #3A2D52; 
+                border-radius: 15px; 
+                font-size: 26px;
+                font-weight: 500;
                 padding: 13px 22px; 
-                margin: 5px 0px;       /* Controlled margin */
+                margin: 3px 0px;       /* Controlled margin */
                 line-height: 1.2;      /* Centers text vertically */
-                /*background-color: #1B132B;*/ /* Subtle background */
+                background-color: #1B132B; /* Subtle background */
                 ">
-                Quick Reality Check
+                Section &#50;. Quick Reality Check
             </div>
-            """, text_alignment= "left",unsafe_allow_html=True
+            """, text_alignment= "center",unsafe_allow_html=True
                 )
         st.write("")
         
@@ -592,30 +452,29 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
         col2.metric("📈 Annual Fee", format_inr(best_card['Fee']))
         col3.metric("% Base Reward Rate", f"{best_card['Base Rate']}%")
 
-     
+        
 
         # --- SMART LOGIC END ---
 
         #Pros/Cons
-        st.markdown("<h3 style='font-weight:500;font-size:18px;color:#E5E7EB;padding-left:12px;border-radius:3px;'> 1️⃣ Why this Card works for you?</h3>", unsafe_allow_html=True)
+        st.markdown("<h3> 1️⃣ Why this Card works for you?</h3>", unsafe_allow_html=True)
         st.markdown(f"""
-        <div class="money-alert money-alert-success" "><b>✅ The Good:</b> {best_card['Pro_Reason']}</div>""",text_alignment= "left", unsafe_allow_html=True)
+        <div class="pro-box"><b>✅ The Good:</b> {best_card['Pro_Reason']}</div>""",text_alignment= "left", unsafe_allow_html=True)
         st.write("")
-        st.markdown("<h3 style='font-weight:500;font-size:18px;color:#E5E7EB;padding-left:12px;'>2️⃣ Where it falls short?</h3>", unsafe_allow_html=True)
-        st.markdown(f"""<div class="money-alert money-alert-warning" ><b>⚠️ The Bad:</b> {best_card['Con_Reason']}</div>""",text_alignment= "left", unsafe_allow_html=True)
+        st.markdown("<h3>2️⃣ Where it falls short?</h3>", unsafe_allow_html=True)
+        st.markdown(f"""<div class="con-box"><b>⚠️ The Bad:</b> {best_card['Con_Reason']}</div>""",text_alignment= "left", unsafe_allow_html=True)
         st.write(" ")
-        st.markdown("<h3 style='font-weight:500;font-size:18px;color:#E5E7EB;padding-left:12px;'>3️⃣ Fee Reality Check</h3>", unsafe_allow_html=True)
+        st.markdown("<h3>3️⃣ Fee Reality Check</h3>", unsafe_allow_html=True)
         # Break-Even Bar
             
-        st.markdown(f"""<div class=" hero-subtext"style = "padding-left:30px;color:#9CA3AF;">Break-Even Analysis (Fee: {format_inr(best_card['Fee'])})</div>""", unsafe_allow_html=True)
-    
+        st.markdown(f"""<div class="hero-subtext">Break-Even Analysis (Fee: {format_inr(best_card['Fee'])})</div>""", unsafe_allow_html=True)
+        
         ##--- SMART LOGIC START ---
         
         if best_card['Fee'] == 0:
             # CASE 1: Lifetime Free Card
-            #st.success("🎉 **Lifetime Free Card!** You are profitable from Day 1")
-            #st.markdown("<style = padding-left:12px; , height:6px;background-color: white;border-radius: 999px;", unsafe_allow_html=True)
-            st.progress(100, text = " 🎉 **Lifetime Free Card!** You are profitable from Day 1")
+            st.success("🎉 **Lifetime Free Card!** You are profitable from Day 1.")
+            st.progress(100)
         else:
             # CASE 2: Normal Card (Do the math)
             # Calculate percent recovered (capped at 100% for the bar)
@@ -623,68 +482,58 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
             annual_reward = max(0, annual_reward)  # Ensure reward is not negative
 
             percent_recovered = min(annual_reward/ (best_card['Fee'] ), 1.0)
+            
+            st.progress(float(percent_recovered))
+            
+            if percent_recovered >= 1.0:
+                st.caption("✅ Congratulations! For current spend Fee is fully recovered in an year.")
+            else:
+                st.caption(f"ℹ️ Your rewards recover **{int(percent_recovered*100)}%** of the annual fee.")
+
+        if best_card['Fee'] > 0 and annual_reward > 0:
             monthly_rewards = annual_reward / 12
             months_to_break_even = best_card['Fee'] / monthly_rewards
 
             if months_to_break_even <= 12:
-                st.progress(float(percent_recovered), text = f" 📈 {int(percent_recovered*100)}% of the annual fee recovered at current monthly expense of {format_inr(spends['total'])} in {int(months_to_break_even)} months.   .")
-                #st.markdown(f"""<div class=" hero-subtext">⏱️ At current monthly spending of {format_inr(spends['total'])} , you will break even in {int(months_to_break_even)} months.</div>""",unsafe_allow_html=True)
+                sidebar_section_header(
+                f"⏱️ At current monthly spending of {format_inr(spends['total'])}, you will break even in {int(months_to_break_even)} months.")
             else:
-                st.progress(float(percent_recovered), text = f" 📈 {int(percent_recovered*100)}% of the annual fee recovered at current monthly expense of {format_inr(spends['total'])}    .")
-                #st.caption("⚠️ At current spending, you may not recover the fee within a year.")
-            # if percent_recovered >= 1.0:
-            #     st.caption("✅ Congratulations! For current spend Fee is fully recovered in an year.")
-            # else:
-            #     st.caption(f"ℹ️ Your rewards recover **{int(percent_recovered*100)}%** of the annual fee.")
-        st.write("")    
-        # if best_card['Fee'] > 0 and annual_reward > 0:
-        #     monthly_rewards = annual_reward / 12
-        #     months_to_break_even = best_card['Fee'] / monthly_rewards
+                st.caption("⚠️ At current spending, you may not recover the fee within a year.")
 
-        #     if months_to_break_even <= 12:
-        #         st.markdown(f"""<div class=" hero-subtext">⏱️ At current monthly spending of {format_inr(spends['total'])} , you will break even in {int(months_to_break_even)} months.</div>""",unsafe_allow_html=True)
-        #     else:
-        #         st.caption("⚠️ At current spending, you may not recover the fee within a year.")
-
-    st.divider()
-    st.write("")
-
-    with st.container(border=False):
+    with st.container(border=True):
         st.markdown(
         f"""
             <div style="
                 color: #E0E0E0 ;
                 display: inline-block; 
                 border: 1px solid #3A2D52; 
-                border-radius: 999px; 
-                font-size: 20px;
-                border-left: 4px solid #ccc ;
+                border-radius: 15px; 
+                font-size: 26px;
                 font-weight: 500;
                 padding: 13px 22px; 
                 margin: 3px 0px;       /* Controlled margin */
                 line-height: 1.2;      /* Centers text vertically */
-                /*background-color: #1B132B;*/ /* Subtle background */
+                background-color: #1B132B; /* Subtle background */
                 ">
-                Market Hype 
+                Section &#51;. Market Context
             </div>
-            """, text_alignment= "left",unsafe_allow_html=True
+            """, text_alignment= "center",unsafe_allow_html=True
                 )
         st.write("")
 
                 # --- NEW: STYLED CONTRAST RATINGS ---
-        r1, r2,r3 = st.columns([1,0.3, 1]) # Give Verdict slightly more space
+        r1, r2 = st.columns([1, 1]) # Give Verdict slightly more space
         
         with r1:
             #st.metric("Market Hype", f"{best_card.get('Market_Rating', 4.5)} ⭐")
-            st.markdown('<h3 style="color:#E0E0E0;font-weight:500;cursor:help ;" title="Based on Net Savings vs Fees">What the internet says?</h5>',text_alignment= "left",unsafe_allow_html=True)
-            
+            st.markdown('<h3 style="font-weight: bold;cursor:help ;" title="Based on Net Savings vs Fees">What the internet says?</h3>',text_alignment= "center",unsafe_allow_html=True)
             #st.markdown("<h3>2️⃣ What the internet says?</h3>", unsafe_allow_html=True)
-            st.markdown(f'<div style="font-size: 25px;font-weight:600;padding-left: 70px; font-weight: bold; cursor: help;" title="Based on Net Savings vs Fees">  {best_card.get("Market_Rating", 4.5)}/5 ⭐</div>',text_alignment= "left",unsafe_allow_html=True)
-            st.write("")
-            st.markdown("<h5 style='font-size: 20px;padding-left: 20px; font-weight: 500;'>➜ Very Popular Card</h5>",text_alignment= "left",unsafe_allow_html=True)
-            st.caption("**Based on average Rating across Cards Affiliate website.**",text_alignment= "left")
-        with r3:
-            st.markdown('<h3 style="color:#E0E0E0;font-weight:500;cursor:help ;" title="Based on Net Savings vs Fees">What is the credlens verdict for you?</h5>',text_alignment= "center",unsafe_allow_html=True)
+            st.markdown(f'<div style="font-size: 30px; font-weight: bold; cursor: help;" title="Based on Net Savings vs Fees">{best_card.get("Market_Rating", 4.5)}/5 ⭐</div>',text_alignment= "center",unsafe_allow_html=True)
+            st.markdown("<h5>➜ Very Popular Card</h5>",text_alignment= "center",unsafe_allow_html=True)
+            st.caption("***Based on average Rating across Cards Affiliate website.**",text_alignment= "center")
+        with r2:
+            #st.markdown("<h3>2️⃣ What the internet says?</h3>", unsafe_allow_html=True)
+            st.markdown('<h3 style=" font-weight: bold; cursor: help; title="Based on Net Savings vs Fees">What is CredLens\'s Verdict for you?</h3>',text_alignment= "center",unsafe_allow_html=True)
             # Dynamic Color Logic
             # 1. LOGIC: Pick the Class Name (Not the color code)
             if "Negative" in verdict:
@@ -701,36 +550,32 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
             </div>
             """,text_alignment= "center",unsafe_allow_html=True)
             
-            st.markdown("<h5 style='font-size: 20px;padding-left: 20px; font-weight: 500;'>Popular - but value depends on your spending pattern</h5>",text_alignment= "center",unsafe_allow_html=True)
-            #Hiding feature now based on chatgpt recommendation.
-            #st.markdown(f"<h5> ⚠️ {best_card.get('Warning_Text', 'No specific warnings for this card.')}</h5>",text_alignment= "center",unsafe_allow_html=True)
+            st.markdown("<h5> ✅ Popular - But Value depends on your spending pattern</h5>",text_alignment= "center",unsafe_allow_html=True)
+            st.markdown(f"<h5> ⚠️ {best_card.get('Warning_Text', 'No specific warnings for this card.')}</h5>",text_alignment= "center",unsafe_allow_html=True)
             st.caption("**We rate on math, not marketing.**",text_alignment= "center")
 
     
-    with st.container(border=False):
-        # st.markdown(
-        # f"""
-        #     <div style="
-        #         color: #E0E0E0 ;
-        #         display: inline-block; 
-        #         border: 1px solid #3A2D52; 
-        #         border-radius: 15px; 
-        #         font-size: 26px;
-        #         font-weight: 500;
-        #         padding: 13px 22px; 
-        #         margin: 3px 0px;       /* Controlled margin */
-        #         line-height: 1.2;      /* Centers text vertically */
-        #         background-color: #1B132B; /* Subtle background */
-        #         ">
-        #         If this card fits your lifestyle:
-        #         click below 👇
-        #     </div>
-        #     """, text_alignment= "center",unsafe_allow_html=True
-        #         )
+    with st.container(border=True):
+        st.markdown(
+        f"""
+            <div style="
+                color: #E0E0E0 ;
+                display: inline-block; 
+                border: 1px solid #3A2D52; 
+                border-radius: 15px; 
+                font-size: 26px;
+                font-weight: 500;
+                padding: 13px 22px; 
+                margin: 3px 0px;       /* Controlled margin */
+                line-height: 1.2;      /* Centers text vertically */
+                background-color: #1B132B; /* Subtle background */
+                ">
+                Section &#52;. If this card fits your lifestyle:
+                Please Click Below 👇
+            </div>
+            """, text_alignment= "center",unsafe_allow_html=True
+                )
         st.write("")
-        st.write("")
-        st.write("")
-        st.markdown("<h3 style='font-size: 25px;font-weight:500px';color:#E5E7EB;> If this card fits your lifestyle:</h3>",text_alignment= "center",unsafe_allow_html=True)
 
         # We inject the style and class here
         st.markdown(f"""
@@ -742,43 +587,37 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
             </a>
         </div>
         """, unsafe_allow_html=True)
-        st.caption("**Affiliate link, no extra cost to you.**",text_alignment= "center")
-    
-    st.divider()
-    st.write("")
-    
-
-    with st.container(border=False):
-        
+        st.write("")
+ 
+    with st.container(border=True):
         st.markdown(
         f"""
             <div style="
                 color: #E0E0E0 ;
                 display: inline-block; 
                 border: 1px solid #3A2D52; 
-                border-radius: 999px; 
-                font-size: 20px;
-                border-left: 4px solid #ccc ;
+                border-radius: 15px; 
+                font-size: 26px;
                 font-weight: 500;
                 padding: 13px 22px; 
                 margin: 3px 0px;       /* Controlled margin */
                 line-height: 1.2;      /* Centers text vertically */
-                /*background-color: #1B132B;*/ /* Subtle background */
+                background-color: #1B132B; /* Subtle background */
                 ">
-                Current Card Check 🎯
+                Section &#53;. Current Card Check 🎯
             </div>
-            """, text_alignment= "left",unsafe_allow_html=True
+            """, text_alignment= "center",unsafe_allow_html=True
                 )
         st.write("")
 
+        
+        
         # --- NEW: SMART CONTEXTUAL ALERTS ---
         if comparison_data:
         
             # 1. THE "NO CARD" NUDGE
             if comparison_data['type'] == 'no_card':
-                st.info(f"""🚀 Select you existing Card in the Profile section OR  """)
-                st.markdown(f"### Start your credit card journey with ***{best_card['Card Name']}***! ")
-
+                st.info(f"🚀 **Get Best Card Now:** Start your credit card journey with  **{best_card['Card Name']}!** " )
 
             # 2. THE "SAME CARD" VALIDATION
             elif comparison_data['type'] == 'same_card':
@@ -793,31 +632,27 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
                 curr_name = comparison_data['current_card_name']
                 diff = comparison_data['diff']
 
-                # Dynamic analogy
-                if diff < 2000:
-                    analogy = "pays for a nice weekend dinner! 🍕"
-                elif diff < 5000:
-                    analogy = "covers your Netflix & WiFi bills for the year! 🎬"
-                elif diff < 10000:
-                    analogy = "effectively pays for a domestic flight! ✈️"
-                elif diff < 25000:
-                    analogy = "is like getting a free Android phone every year! 📱"
-                elif diff == 0:
-                    analogy = "Great choice!!"
-                else:
-                    analogy = "could pay for an international holiday! 🏖️"
-
                 if diff > 0:
-                    # body_text = f"Based on your spending pattern, continuing with <span style='font-weight:900'>{curr_name}</span> results in an estimated annual shortfall of <span style='font-weight:900'>{format_inr(diff)}</span>."
-                    # muted_text = f"* Switching to <span style='font-weight:800'>{best_card['Card Name']}</span> aligns better with your spend mix.<br>* Analogy: {analogy}"
+                # Positive Diff = The Winner is BETTER (Switch!)
+                
+                    # --- DYNAMIC ANALOGY ENGINE ---
+                    if diff < 2000:
+                        analogy = "pays for a nice weekend dinner! 🍕"
+                    elif diff < 5000:
+                        analogy = "covers your Netflix & WiFi bills for the year! 🎬"
+                    elif diff < 10000:
+                        analogy = "effectively pays for a domestic flight! ✈️"
+                    elif diff < 25000:
+                        analogy = "is like getting a free Android phone every year! 📱"
+                    elif diff == 0:
+                        analogy = "Great choice!!"
+                    else:
+                        analogy = "could pay for an international holiday! 🏖️"
+                    # ------------------------------
 
-                    # render_alert(
-                    #     title="Opportunity Cost Identified",
-                    #     body=body_text,
-                    #     variant="warning",
-                    #     muted=muted_text
-                    # )
-
+                    
+                    # --- UPDATED HTML FOR THE ALERT ---
+                    
 
                     st.markdown(f"""
                     <div class="money-alert">
@@ -825,24 +660,23 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
                             Opportunity Cost Identified
                         </div>
 
-                    Based on your spending pattern, continuing with **{curr_name}** results in an estimated 
+                    Based on your spending pattern, continuing with 
+                    **{curr_name}** results in an estimated 
                     annual shortfall of **{format_inr(diff)}**.
 
                     <div class="money-alert-muted">  
-                    * Switching to <span class="highlight-card">{best_card['Card Name']}</span> aligns better with your spend mix.    
-                    <br>* 👉  Switching {analogy}
+                    * Switching to <b>{best_card['Card Name']}</b> aligns better with your spend mix.    
+                    <br>* Switching : {analogy}
                     </div>
                     </div>
                     """, unsafe_allow_html=True)
 
 
-                    
-
-
-                else:
+                elif diff < 0: 
                     # Negative Diff = The Current Card is ACTUALLY BETTER than our algorithm's pick?
                     # (Rare, but happens if the user selected a Super Premium card we filtered out by salary, or logic quirks)
-                    st.success(f"✅ <b>Good News!</b> Your current card ({curr_name}) is actually performing great. Diff: {diff}, Current savings: {comparison_data['current_savings']}. Keep using it!", unsafe_allow_html=True)
+                    st.success(f"✅ **Good News!** Your current card ({curr_name}) is actually performing great. as the diff is {diff} and current savings is {comparison_data['current_savings']}. Keep using it!")
+
 
             #st.metric(label = "",value=format_inr(annual_net_saving), delta=delta_text, width = "content")
             #m2.metric("💳 Annual Fee", format_inr(best_card['Fee']))
@@ -1034,46 +868,46 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
         
         st.markdown(formula_md)
 
-        # 6. FIXED: Chart Height (Fixing Item #5)
-        st.subheader("📊 Profitability Comparison")
-        chart_data = valid_cards_df.head(5).copy()
-        c = alt.Chart(chart_data).mark_bar(cornerRadiusTopRight=10, cornerRadiusBottomRight=10).encode(
-            x=alt.X('Net Savings', title='Net Annual Value (₹)'),
-            y=alt.Y('Card Name', sort='-x', title=None),
-            color=alt.Color('Net Savings', scale=alt.Scale(scheme='greens'), legend=None)
-        ).properties(height=350) # <--- Increased height here
-        st.altair_chart(c, use_container_width=True)
+    # 6. FIXED: Chart Height (Fixing Item #5)
+    st.subheader("📊 Profitability Comparison")
+    chart_data = valid_cards_df.head(5).copy()
+    c = alt.Chart(chart_data).mark_bar(cornerRadiusTopRight=10, cornerRadiusBottomRight=10).encode(
+        x=alt.X('Net Savings', title='Net Annual Value (₹)'),
+        y=alt.Y('Card Name', sort='-x', title=None),
+        color=alt.Color('Net Savings', scale=alt.Scale(scheme='greens'), legend=None)
+    ).properties(height=350) # <--- Increased height here
+    st.altair_chart(c, use_container_width=True)
+    
+    with st.expander("🔍 Detailed Comparison"):
+            # Define the columns we WANT to show
+        display_cols = [
+            "Card Name", "Status", "Net Savings", "Fee", 
+            "Reward Type", "Min Income", "Warning_Text"
+        ]
         
-        with st.expander("🔍 Detailed Comparison"):
-                # Define the columns we WANT to show
-            display_cols = [
-                "Card Name", "Status", "Net Savings", "Fee", 
-                "Reward Type", "Min Income", "Warning_Text"
-            ]
-            
-            # Filter the dataframe to only show these columns (if they exist)
-            # We use list intersection to avoid errors if a column is missing
-            final_cols = [c for c in display_cols if c in valid_cards_df.columns]
-            
-            display_df = valid_cards_df[final_cols].copy()
-            
-            # Format the numbers for display
-            if "Net Savings" in display_df.columns:
-                display_df["Net Savings"] = display_df["Net Savings"].apply(format_inr)
-            
-            st.dataframe(
-                display_df,
-                use_container_width=True,
-                hide_index=True,
-                column_config={
-                    "Status": st.column_config.TextColumn(
-                        "Status",
-                        help="Hot, Stable, or Devalued",
-                        width="small"
-                    ),
-                    "Warning_Text": st.column_config.TextColumn(
-                        "Warnings",
-                        width="medium"
-                    )
-                }
-            )
+        # Filter the dataframe to only show these columns (if they exist)
+        # We use list intersection to avoid errors if a column is missing
+        final_cols = [c for c in display_cols if c in valid_cards_df.columns]
+        
+        display_df = valid_cards_df[final_cols].copy()
+        
+        # Format the numbers for display
+        if "Net Savings" in display_df.columns:
+            display_df["Net Savings"] = display_df["Net Savings"].apply(format_inr)
+        
+        st.dataframe(
+            display_df,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Status": st.column_config.TextColumn(
+                    "Status",
+                    help="Hot, Stable, or Devalued",
+                    width="small"
+                ),
+                "Warning_Text": st.column_config.TextColumn(
+                    "Warnings",
+                    width="medium"
+                )
+            }
+        )

@@ -46,18 +46,20 @@ def init_session_state():
     if 'cibil' not in st.session_state:
         st.session_state['cibil'] = 700
     
+    if 'results_visible' not in st.session_state:
+        st.session_state['results_visible'] = False
 # --- 2. MAIN APPLICATION FLOW ---
     
 
 def main():
     # 1. SETUP PAGE (Must be the very first command)
 
-    st.set_page_config(page_title="CredLens", page_icon="💳", layout="wide")
+    st.set_page_config(page_title="CredLens", page_icon="💳", layout="wide", initial_sidebar_state= "expanded")
 
     # Initialize Memory
     init_session_state()
 
-    st.title("Trust & Transparency Unlocked") # <--- Visual check on screen
+    #st.title("Trust & Transparency Unlocked") # <--- Visual check on screen
 
     # 2. LOAD CSS (From UI module)
     ui.render_custom_css()
@@ -75,136 +77,161 @@ def main():
     # We call the function, and it returns the user's choices
     user_inputs = ui.render_sidebar(all_card_names)
 
+    #st.write("DEBUG results_visible:", st.session_state["results_visible"])
+    #st.write(user_inputs.get("calculate_button") )
+
+
     # 6. MAIN LOGIC FLOW
+
+    # --- BUTTON LOGIC START ---
+    # Check if button was pressed just now
+    if user_inputs.get("calculate_button") :
+        st.session_state['results_visible'] = True
     
+    # ONLY Run Main Logic if the flag is True
+    if st.session_state["results_visible"]:
+
+        # A. Filter Cards based on Salary
+        # (Simple pandas filtering can stay here or move to logic.py)
+        valid_cards = df[df['Min Income'] <= user_inputs['salary']].copy()
         
-    # A. Filter Cards based on Salary
-    # (Simple pandas filtering can stay here or move to logic.py)
-    valid_cards = df[df['Min Income'] <= user_inputs['salary']].copy()
-    
-    # B. Lounge Filter
-    if user_inputs['wants_lounge']:
-        valid_cards = valid_cards[valid_cards['Lounge Access'] == 'Yes']
+        # B. Lounge Filter
+        if user_inputs['wants_lounge']:
+            valid_cards = valid_cards[valid_cards['Lounge Access'] == 'Yes']
 
-    # C. Calculate Rewards for every card (Using Logic Module)
-    # We apply the pure math function to every row
-    valid_cards['Net Savings'] = valid_cards.apply(
-        lambda row: logic.calculate_card_yield(row, user_inputs['spends']), 
-        axis=1
-    )
-    
-    # D. Sort Winners
-    valid_cards = valid_cards.sort_values(by='Net Savings', ascending=False)
-    
-    # E. Display Results (If cards exist)
-    if not valid_cards.empty:
-        best_card = valid_cards.iloc[0]
-
-        # --- NEW: SMART COMPARISON LOGIC (3 Scenarios) ---
-        comparison_result = None
-        current_card_name = user_inputs.get('current_card_name')
+        # C. Calculate Rewards for every card (Using Logic Module)
+        # We apply the pure math function to every row
+        valid_cards['Net Savings'] = valid_cards.apply(
+            lambda row: logic.calculate_card_yield(row, user_inputs['spends']), 
+            axis=1
+        )
         
-        # SCENARIO 1: User has NO card (The Nudge)
-        if current_card_name == "I don't have a card":
-            comparison_result = {
-                "type": "no_card"
-                
-            }
-            
-        # SCENARIO 2: User ALREADY has the Winner (The Validation)
-        elif current_card_name == best_card['Card Name']:
-             comparison_result = {
-                "type": "same_card"
-                
-            }
+        # D. Sort Winners
+        valid_cards = valid_cards.sort_values(by='Net Savings', ascending=False)
+        
+        # E. Display Results (If cards exist)
+        if not valid_cards.empty:
+            best_card = valid_cards.iloc[0]
 
-        # SCENARIO 3: User has a DIFFERENT card (The Switch Math)
-        elif current_card_name:
-            # Find the row for the current card in the ORIGINAL dataframe
+            # --- NEW: SMART COMPARISON LOGIC (3 Scenarios) ---
+            comparison_result = None
+            current_card_name = user_inputs.get('current_card_name')
             
-            current_card_row = df[df['Card Name'] == current_card_name]
-            # Apply lounge filter if needed
-            if user_inputs['wants_lounge']:
-                current_card_row = current_card_row[current_card_row['Lounge Access'] == 'Yes'] 
-            
-            if not current_card_row.empty:
-                current_card_row = current_card_row.iloc[0]
-                
-                # Run the Math
-                current_savings = logic.calculate_card_yield(current_card_row, user_inputs['spends'])
-                current_card_lounge = current_card_row['Lounge Access']
-                diff = best_card['Net Savings'] - current_savings
-                
-                # Only show if there's a real difference
-                if abs(diff) > 100 and current_card_lounge: 
-                    comparison_result = {
-                        "type": "switch",
-                        "current_card_name": current_card_name,
-                        "diff": int(diff),
-                        "current_savings": int(current_savings) 
-                    }
-            else:
+            # SCENARIO 1: User has NO card (The Nudge)
+            if current_card_name == "I don't have a card":
                 comparison_result = {
-                    "type": "no_card_lounge",
-                    "current_card_name": current_card_name
+                    "type": "no_card"
+                    
+                }
+                
+            # SCENARIO 2: User ALREADY has the Winner (The Validation)
+            elif current_card_name == best_card['Card Name']:
+                comparison_result = {
+                    "type": "same_card"
+                    
                 }
 
+            # SCENARIO 3: User has a DIFFERENT card (The Switch Math)
+            elif current_card_name:
+                # Find the row for the current card in the ORIGINAL dataframe
+                
+                current_card_row = df[df['Card Name'] == current_card_name]
+                # Apply lounge filter if needed
+                if user_inputs['wants_lounge']:
+                    current_card_row = current_card_row[current_card_row['Lounge Access'] == 'Yes'] 
+                
+                if not current_card_row.empty:
+                    current_card_row = current_card_row.iloc[0]
+                    
+                    # Run the Math
+                    current_savings = logic.calculate_card_yield(current_card_row, user_inputs['spends'])
+                    current_card_lounge = current_card_row['Lounge Access']
+                    diff = best_card['Net Savings'] - current_savings
+                    
+                    # Only show if there's a real difference
+                    if abs(diff) > 100 and current_card_lounge: 
+                        comparison_result = {
+                            "type": "switch",
+                            "current_card_name": current_card_name,
+                            "diff": int(diff),
+                            "current_savings": int(current_savings) 
+                        }
+                else:
+                    comparison_result = {
+                        "type": "no_card_lounge",
+                        "current_card_name": current_card_name
+                    }
 
-        # Calculate Break-Even Stats (Using Logic Module)
-        be_stats = logic.calculate_break_even_stats(
-            fee=best_card['Fee'], 
-            net_savings=best_card['Net Savings'], 
-            user_total_annual_spend=user_inputs['spends']['total']
-        )
-        
-        # Get AI Verdict (Using Logic Module - Feature Flag Checked)
-        ai_text = None
-        
-        if user_inputs["enable_ai"] and user_inputs["ask_ai_clicked"]:
-            with st.spinner("🤖 Asking Gemini..."):
-                ai_text = logic.get_ai_verdict(
-                    salary=user_inputs['salary'],
-                    spends=user_inputs['spends']['total'],
-                    card_name=best_card['Card Name'],
-                    savings=best_card['Net Savings']
-                )
 
-        # 1. Calculate the Verdict (NEW)
-        verdict = logic.get_credlens_verdict(
-            net_savings=best_card['Net Savings'],
-            fee=best_card['Fee']
-        )
+            # Calculate Break-Even Stats (Using Logic Module)
+            be_stats = logic.calculate_break_even_stats(
+                fee=best_card['Fee'], 
+                net_savings=best_card['Net Savings'], 
+                user_total_annual_spend=user_inputs['spends']['total']
+            )
+            
+            # Get AI Verdict (Using Logic Module - Feature Flag Checked)
+            ai_text = None
+            
+            if user_inputs["enable_ai"] and user_inputs["ask_ai_clicked"]:
+                with st.spinner("🤖 Asking Gemini..."):
+                    ai_text = logic.get_ai_verdict(
+                        salary=user_inputs['salary'],
+                        spends=user_inputs['spends']['total'],
+                        card_name=best_card['Card Name'],
+                        savings=best_card['Net Savings']
+                    )
 
-        # RENDER THE RESULTS (Using UI Module)
-        ui.render_results(
-            best_card=best_card, 
-            break_even_stats=be_stats, 
-            ai_verdict=ai_text, 
-            valid_cards_df=valid_cards,
-            spends = user_inputs["spends"],
-            verdict = verdict,
-            comparison_data = comparison_result,
-            approval_odds = .91,
-            age = user_inputs["age"],
-            credit_score = user_inputs["credit_score"]
-        )
-        
-        # Save Lead (Using Data Module)
-        current_time = time.time()
-        if current_time - st.session_state["last_save_time"]> 10:
-
-            data_manager.save_lead_to_sheets(
-                salary=user_inputs['salary'],
-                spends=user_inputs['spends'],
-                top_card=best_card['Card Name'],
-                savings=int(best_card['Net Savings'])
+            # 1. Calculate the Verdict (NEW)
+            verdict = logic.get_credlens_verdict(
+                net_savings=best_card['Net Savings'],
+                fee=best_card['Fee']
             )
 
-            #update the timer
-            st.session_state["last_save_time"] = current_time
-        
+            # RENDER THE RESULTS (Using UI Module)
+            ui.render_results(
+                best_card=best_card, 
+                break_even_stats=be_stats, 
+                ai_verdict=ai_text, 
+                valid_cards_df=valid_cards,
+                spends = user_inputs["spends"],
+                verdict = verdict,
+                comparison_data = comparison_result,
+                approval_odds = 0.91,
+                age = user_inputs["age"],
+                credit_score = user_inputs["credit_score"]
+            )
+            
+            # Save Lead (Using Data Module)
+            current_time = time.time()
+            if current_time - st.session_state["last_save_time"]> 10:
+
+                data_manager.save_lead_to_sheets(
+                    salary=user_inputs['salary'],
+                    spends=user_inputs['spends'],
+                    top_card=best_card['Card Name'],
+                    savings=int(best_card['Net Savings'])
+                )
+
+                #update the timer
+                st.session_state["last_save_time"] = current_time
+
+        else: 
+            st.error("😕 No cards found for your salary profile.")
+            
     else:
-        st.error("😕 No cards found for your salary profile.")
+        # Initial State (Before Button Click)
+        st.info("👈 Enter your details in the sidebar and click 'See My Recommendations' to find your perfect card.")
+        
+        # Optional: Show a "Teaser" image or value prop here to fill empty space
+        st.markdown("""
+        <div style="text-align: center; color: #888; padding: 50px;">
+            <h3>Ready to stop losing money?</h3>
+            <p>We analyze hidden fees, reward caps, and your actual spending patterns.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+        
 
     # else:
     #     # Initial State
