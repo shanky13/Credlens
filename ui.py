@@ -870,10 +870,13 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
 
 
                 # 2. THE "SAME CARD" VALIDATION
-                elif comparison_data['type'] == 'same_card':
+                elif comparison_data['type'] == 'same_card' and comparison_data["current_card_name"] == best_card['Card Name']:
                     st.success(f"🎉 **Great Job!** You already own the **{best_card['Card Name']}**. You are maximizing your returns!")
+                
+                elif comparison_data['type'] == 'same_card' and comparison_data["current_card_name"] != best_card['Card Name']:
+                    st.success(f"🎉 **Great Job!** You already own a very good **{comparison_data['current_card_name']}** card. You are maximizing your returns!")
 
-                # 3. THE "SAME CARD" VALIDATION
+                # 3. THE "lounge access CARD" VALIDATION
                 elif comparison_data['type'] == 'no_card_lounge':
                     st.success(f"⚠️ **Your card:** **{comparison_data['current_card_name']}** does not provide lounge access! switch to **{best_card['Card Name']}** to enjoy complimentary lounges. 🛫")
 

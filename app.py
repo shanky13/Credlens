@@ -156,6 +156,12 @@ def main():
                             "diff": int(diff),
                             "current_savings": int(current_savings) 
                         }
+                    else:
+                        comparison_result = {
+                            "type": "same_card",
+                            "current_card_name": current_card_name
+                        }
+
                 else:
                     comparison_result = {
                         "type": "no_card_lounge",
