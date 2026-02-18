@@ -199,7 +199,8 @@ def main():
                 comparison_data = comparison_result,
                 approval_odds = 0.91,
                 age = user_inputs["age"],
-                credit_score = user_inputs["credit_score"]
+                credit_score = user_inputs["credit_score"],
+                max_spend_dict = user_inputs["max_spend_dict"]
             )
             
             # Save Lead (Using Data Module)

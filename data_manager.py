@@ -11,7 +11,7 @@ def load_card_data(csv_path: str = "cards.csv") -> pd.DataFrame:
     Returns a clean DataFrame ready for analysis.
     """
     try:
-        df = pd.read_csv(csv_path)
+        df = pd.read_csv(csv_path, quotechar='"')
         
         # Standardize column names (remove accidental spaces)
         df.columns = df.columns.str.strip()
@@ -34,13 +34,13 @@ def load_card_data(csv_path: str = "cards.csv") -> pd.DataFrame:
         # Let's pretend specific cards are Devalued/Hot to test UI
         # In real life, you edit the CSV file directly.
         
-        if 'Status' in df.columns:
-            # Force 'Axis Magnus' to be Devalued
-            df.loc[df['Card Name'].str.contains("Infinia", case=False), 'Status'] = "Devalued"
-            df.loc[df['Card Name'].str.contains("Infinia", case=False), 'Warning_Text'] = "Milestones removed. Fees increased to 12.5k."
+        # if 'Status' in df.columns:
+        #     # Force 'Axis Magnus' to be Devalued
+        #     df.loc[df['Card Name'].str.contains("Infinia", case=False), 'Status'] = "Devalued"
+        #     df.loc[df['Card Name'].str.contains("Infinia", case=False), 'Warning_Text'] = "Milestones removed. Fees increased to 12.5k."
             
-            # Force 'SBI Cashback' to be Hot
-            df.loc[df['Card Name'].str.contains("Neu", case=False), 'Status'] = "Hot"
+        #     # Force 'SBI Cashback' to be Hot
+        #     df.loc[df['Card Name'].str.contains("Neu", case=False), 'Status'] = "Hot"
         # ---------------------------------------
         return df
         
