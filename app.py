@@ -169,19 +169,10 @@ def main():
                     }
 
 
-            # Calculate Break-Even Stats (Using Logic Module)
-            be_stats = logic.calculate_break_even_stats(
-                fee=best_card['Fee'], 
-                net_savings=best_card['Net Savings'], 
-                user_total_annual_spend=user_inputs['spends']['total']
-            )
-            
             # Get AI Verdict (Using Logic Module - Feature Flag Checked)
-            ai_text = None
-            
             if user_inputs["enable_ai"] and user_inputs["ask_ai_clicked"]:
                 with st.spinner("🤖 Asking Gemini..."):
-                    ai_text = logic.get_ai_verdict(
+                    logic.get_ai_verdict(
                         salary=user_inputs['salary'],
                         spends=user_inputs['spends']['total'],
                         card_name=best_card['Card Name'],
@@ -197,15 +188,10 @@ def main():
             # RENDER THE RESULTS (Using UI Module)
             ui.render_results(
                 best_card=best_card, 
-                break_even_stats=be_stats, 
-                ai_verdict=ai_text, 
                 valid_cards_df=valid_cards,
                 spends = user_inputs["spends"],
                 verdict = verdict,
                 comparison_data = comparison_result,
-                approval_odds = 0.91,
-                age = user_inputs["age"],
-                credit_score = user_inputs["credit_score"],
                 max_spend_dict = user_inputs["max_spend_dict"]
             )
             

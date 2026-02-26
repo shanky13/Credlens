@@ -637,64 +637,6 @@ def render_custom_css():
     </style>
     """, unsafe_allow_html=True)
 
-def render_section_header(title: str):
-    st.markdown(
-        f'<div class="section-header">{title}</div>',
-        unsafe_allow_html=True
-    )
-
-
-def render_alert(title: str, body: str, variant: str = "info", muted: str = None):
-    """
-    Renders a styled alert box in Streamlit.
-    
-    Parameters:
-    - title: str -> Main alert title
-    - body: str -> HTML/Markdown body text (bold using <strong> or Markdown)
-    - variant: str -> "info" | "warning" | "success" (affects border & title color)
-    - muted: str -> Optional secondary text below the body, smaller and muted
-    """
-    
-    muted_html = f'<div class="alert-muted alert-muted-spaced">{muted}</div>' if muted else ""
-    title_variant_class = f"alert-title-{variant}" if variant in {"info", "warning", "success"} else "alert-title-info"
-    
-    st.markdown(f"""
-    <div class="alert-box alert-{variant}">
-        <div class="alert-title {title_variant_class}">
-            {title}
-        </div>
-        <div>{body}</div>
-        {muted_html}
-    </div>
-    """, unsafe_allow_html=True)
-
-
-def render_metric_card(label: str, value: str):
-    st.markdown(
-        f"""
-        <div class="metric-card">
-            <div class="metric-label">{label}</div>
-            <div class="metric-value">{value}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-
-
-    # --- 5. METRIC LABEL FIX (Prevents "Annual Net S...") ---
-    st.markdown("""
-    <style>
-    [data-testid="stMetricLabel"] {
-        white-space: normal !important; /* Forces text to wrap */
-        overflow: visible !important;   /* Shows the full text */
-        line-height: 1.2 !important;    /* Keeps lines close together */
-        height: auto !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
 # 2. HELPER: BRAND COLORS
 
 def get_brand_color(card_name):
@@ -771,7 +713,6 @@ def render_sidebar(card_list):
             # Total Summary (Immediate Feedback)
             
             total = online + travel + offline + utilities + upi
-            max_spend_cat = None
             spend_data = {"Online": online, "Offline": offline, "Travel": travel, "Utilities": utilities, "UPI": upi}
             max_val = max(spend_data.values())
             max_spend_dict = {cat: val for cat, val in spend_data.items() if val == max_val and val > 0}
@@ -857,7 +798,7 @@ def render_sidebar(card_list):
         }
 
 # 4. RESULTS DISPLAY (The Heavy Lifter)
-def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spends, verdict, comparison_data = None,age = 10 , credit_score = 700, approval_odds = 0,max_spend_dict = None):
+def render_results(best_card, valid_cards_df, spends, verdict, comparison_data=None, max_spend_dict=None):
     """Renders the entire results section (Top Card + Chart + Table). """
     
     #st.markdown("---")
@@ -866,7 +807,7 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
     
     with st.container(key="styled_container_1" , border=False):
         st.markdown(
-        f"""
+        """
             <div class="title-card">
                 Your Top Recommendation
             </div>
@@ -959,8 +900,7 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
                 st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
 
             # 4. CARD: Link 
-            search_query = best_card['Card Name'].replace(' ', '+')
-            #st.markdown(f"For detailed reviews, [click here](https://www.google.com/search?q={search_query}+reviews).")
+            #st.markdown(f"For detailed reviews, [click here](https://www.google.com/search?q={best_card['Card Name'].replace(' ', '+')}+reviews).")
             
         
     #st.divider()
@@ -972,7 +912,7 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
         
         
         st.markdown(
-        f"""
+        """
             <div class="section-header">
             Quick Reality Check
             </div>
@@ -1052,7 +992,7 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
 
     with st.container( border=False):
         st.markdown(
-        f"""
+        """
             <div class="section-header">
                 Market vs CredLens
             </div>
@@ -1123,7 +1063,7 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
     with st.container(border=False):
         
         st.markdown(
-        f"""
+        """
             <div class="section-header">
                 Current Card Check
             </div>
@@ -1229,7 +1169,7 @@ def render_results(best_card, break_even_stats, ai_verdict, valid_cards_df, spen
         if spends.get('offline', 0) > 0:
             formula_md += f"* **Offline(Annual):** {format_inr(spends['offline']*12)} × **{best_card.get('Base Rate', 0)}%**\n"
             
-        formula_md += f"\n**Net Calculation(Annual):** `(Total Rewards - Annual Fee) = Profit`"
+        formula_md += "\n**Net Calculation(Annual):** `(Total Rewards - Annual Fee) = Profit`"
         
         st.markdown(formula_md)
 

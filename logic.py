@@ -65,36 +65,7 @@ def calculate_card_yield(row, spends_dict):
     # 6. NET SAVINGS (Profit)
     return actual_reward - row['Fee']
 
-# 3. BREAK-EVEN LOGIC
-def calculate_break_even_stats(fee, net_savings, user_total_annual_spend):
-    """
-    Calculates metrics for the Break-Even Bar.
-    """
-    if user_total_annual_spend > 0:
-        total_earnings = net_savings + fee
-        effective_rate = total_earnings / user_total_annual_spend
-    else:
-        effective_rate = 0
-        
-    # Calculate Target Spend
-    if effective_rate > 0:
-        break_even_spend = int(fee / effective_rate)
-    else:
-        break_even_spend = 9999999 if fee > 0 else 0
-        
-    # Calculate Progress (0.0 to 1.0)
-    if break_even_spend > 0:
-        pct_to_breakeven = min(1.0, user_total_annual_spend / break_even_spend)
-    else:
-        pct_to_breakeven = 1.0 # Already won if fee is 0
-        
-    return {
-        "break_even_spend": break_even_spend,
-        "effective_rate": effective_rate,
-        "pct_fill": pct_to_breakeven
-    }
-
-# 4. AI INTEGRATION
+# 3. AI INTEGRATION
 # Note: kept cached to save money/quota
 @st.cache_resource(show_spinner=False)
 def get_ai_verdict(salary, spends, card_name, savings):
@@ -157,12 +128,7 @@ if __name__ == "__main__":
     # 1. Test Formatting
     print(f"Format Check: 10000 -> {format_inr(10000)}")
     
-    # 2. Test Break-Even
-    stats = calculate_break_even_stats(fee=500, net_savings=2000, user_total_annual_spend=100000)
-    print(f"Break-Even Stats: {stats}")
-    
-    # 3. Test AI (Only works if you have API key in secrets, otherwise skips)
+    # 2. Test AI (Only works if you have API key in secrets, otherwise skips)
     print("✅ Logic Module Valid.")
 
     print(get_credlens_verdict(100, 500))
-
