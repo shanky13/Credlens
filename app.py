@@ -1,16 +1,12 @@
 import time
 
 import streamlit as st
-print("1. App Started") # <--- Add this
 
 import ui
-print("2. UI Imported") # <--- Add this
 
 import logic
-print("3. Logic Imported") # <--- Add this
 
 import data_manager
-print("4. Data Manager Imported") # <--- Add this
 
 # --- 1. MEMORY INITIALIZATION (New) ---
 def init_session_state():
@@ -48,6 +44,23 @@ def init_session_state():
     
     if 'results_visible' not in st.session_state:
         st.session_state['results_visible'] = False
+
+
+def reset_inputs():
+    """Resets user-editable inputs to defaults and hides results."""
+    defaults = {
+        "salary": 50000,
+        "online": 5000,
+        "offline": 2000,
+        "travel": 0,
+        "utilities": 0,
+        "upi": 0,
+        "filter_lounge": False,
+        "current_card_input": "I don't have a card",
+    }
+    for key, value in defaults.items():
+        st.session_state[key] = value
+    st.session_state["results_visible"] = False
 # --- 2. MAIN APPLICATION FLOW ---
     
 
@@ -85,30 +98,41 @@ def main():
 
     # --- BUTTON LOGIC START ---
     # Check if button was pressed just now
-    if user_inputs.get("calculate_button") :
+    show_loading = bool(user_inputs.get("calculate_button"))
+    if show_loading:
         st.session_state['results_visible'] = True
+
+    if user_inputs.get("reset_button"):
+        reset_inputs()
+        st.rerun()
     
     # ONLY Run Main Logic if the flag is True
     if st.session_state["results_visible"]:
 
-        # A. Filter Cards based on Salary
-        # (Simple pandas filtering can stay here or move to logic.py)
-        valid_cards = df[df['Min Income'] <= user_inputs['salary']].copy()
-        
-        # B. Lounge Filter
-        if user_inputs['wants_lounge']:
-            valid_cards = valid_cards[valid_cards['Lounge Access'] == 'Yes']
+        def run_recommendation_flow():
+            # A. Filter Cards based on Salary
+            valid_cards_local = df[df['Min Income'] <= user_inputs['salary']].copy()
+            
+            # B. Lounge Filter
+            if user_inputs['wants_lounge']:
+                valid_cards_local = valid_cards_local[valid_cards_local['Lounge Access'] == 'Yes']
 
-        # C. Calculate Rewards for every card (Using Logic Module)
-        # We apply the pure math function to every row
-        valid_cards['Net Savings'] = valid_cards.apply(
-            lambda row: logic.calculate_card_yield(row, user_inputs['spends']), 
-            axis=1
-        )
-        
-        # D. Sort Winners
-        valid_cards = valid_cards.sort_values(by='Net Savings', ascending=False)
-        
+            # C. Calculate Rewards for every card (Using Logic Module)
+            valid_cards_local['Net Savings'] = valid_cards_local.apply(
+                lambda row: logic.calculate_card_yield(row, user_inputs['spends']), 
+                axis=1
+            )
+            
+            # D. Sort Winners
+            valid_cards_local = valid_cards_local.sort_values(by='Net Savings', ascending=False)
+            return valid_cards_local
+
+        if show_loading:
+            with st.spinner("Calculating personalized recommendations..."):
+                valid_cards = run_recommendation_flow()
+        else:
+            valid_cards = run_recommendation_flow()
+
         # E. Display Results (If cards exist)
         if not valid_cards.empty:
             best_card = valid_cards.iloc[0]
@@ -192,7 +216,8 @@ def main():
                 spends = user_inputs["spends"],
                 verdict = verdict,
                 comparison_data = comparison_result,
-                max_spend_dict = user_inputs["max_spend_dict"]
+                max_spend_dict = user_inputs["max_spend_dict"],
+                wants_lounge = user_inputs["wants_lounge"]
             )
             
             # Save Lead (Using Data Module)
