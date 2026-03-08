@@ -88,7 +88,7 @@ def main():
 
     # 5. RENDER SIDEBAR (And capture inputs)
     # We call the function, and it returns the user's choices
-    user_inputs = ui.render_sidebar(all_card_names)
+    user_inputs = ui.render_sidebar(all_card_names, reset_callback=reset_inputs)
 
     #st.write("DEBUG results_visible:", st.session_state["results_visible"])
     #st.write(user_inputs.get("calculate_button") )
@@ -102,10 +102,6 @@ def main():
     if show_loading:
         st.session_state['results_visible'] = True
 
-    if user_inputs.get("reset_button"):
-        reset_inputs()
-        st.rerun()
-    
     # ONLY Run Main Logic if the flag is True
     if st.session_state["results_visible"]:
 
@@ -151,7 +147,8 @@ def main():
             # SCENARIO 2: User ALREADY has the Winner (The Validation)
             elif current_card_name == best_card['Card Name']:
                 comparison_result = {
-                    "type": "same_card"
+                    "type": "same_card",
+                    "current_card_name": current_card_name
                     
                 }
 
@@ -173,7 +170,7 @@ def main():
                     diff = best_card['Net Savings'] - current_savings
                     
                     # Only show if there's a real difference
-                    if abs(diff) > 100 and current_card_lounge: 
+                    if abs(diff) > 100 and current_card_lounge == 'Yes':
                         comparison_result = {
                             "type": "switch",
                             "current_card_name": current_card_name,
@@ -239,7 +236,7 @@ def main():
             
     else:
         # Initial State (Before Button Click)
-        st.info("👈 Enter your details in the sidebar and click 'See My Recommendations' to find your perfect card.")
+        st.info("👈 Enter your details in the sidebar and click 'See recommendations' to find your perfect card.")
         
         # Optional: Show a "Teaser" image or value prop here to fill empty space
         st.markdown("""

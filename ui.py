@@ -194,15 +194,25 @@ def render_custom_css():
 
     .section-header {
         color: var(--text-primary);
-        display: inline-block;
-        border: 1px solid #3A2D52;
-        border-radius: 999px;
-        border-left: 2px solid #6B7280;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid rgba(107, 114, 128, 0.38);
+        border-left: 3px solid rgba(96, 165, 250, 0.75);
+        border-radius: 10px;
+        background: rgba(31, 41, 55, 0.35);
         font-size: var(--fs-lg);
-        font-weight: var(--fw-medium);
-        padding: var(--space-2) var(--space-4);
-        margin: var(--space-1) 0;
+        font-weight: var(--fw-semibold);
+        letter-spacing: 0.01em;
+        padding: 7px 13px;
+        margin: var(--space-2) 0 var(--space-1) 0;
         line-height: 1.2;
+    }
+
+    .section-subtitle {
+        color: var(--text-secondary);
+        font-size: var(--fs-sm);
+        line-height: 1.4;
+        margin: 2px 0 var(--space-2) 2px;
     }
 
     .best-card-name {
@@ -652,16 +662,58 @@ def render_custom_css():
         margin-bottom: 14px;
     }
 
+    .fee-outlook-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: flex-start;
+        gap: var(--space-2);
+        margin-bottom: 6px;
+    }
+
     .fee-outlook-title {
         color: var(--text-primary);
         font-size: var(--fs-sm);
         font-weight: var(--fw-semibold);
-        margin: 0 0 6px 0;
+        margin: 0;
         line-height: 1.35;
     }
 
+    .fee-outlook-status {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-size: var(--fs-xs);
+        line-height: 1.25;
+        font-weight: var(--fw-semibold);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        border: 1px solid rgba(156, 163, 175, 0.2);
+        color: var(--text-secondary);
+        background: rgba(17, 24, 39, 0.45);
+        white-space: nowrap;
+        margin-left: 0;
+    }
+
+    .fee-outlook-status--excellent {
+        color: #86EFAC;
+        border-color: rgba(34, 197, 94, 0.45);
+        background: rgba(20, 83, 45, 0.28);
+    }
+
+    .fee-outlook-status--moderate {
+        color: #FCD34D;
+        border-color: rgba(245, 158, 11, 0.45);
+        background: rgba(120, 53, 15, 0.25);
+    }
+
+    .fee-outlook-status--weak {
+        color: #FCA5A5;
+        border-color: rgba(239, 68, 68, 0.45);
+        background: rgba(127, 29, 29, 0.25);
+    }
+
     .fee-outlook-bar {
-        width: min(280px, 78%);
+        width: min(320px, 100%);
         height: 8px;
         border-radius: 999px;
         background: rgba(75, 85, 99, 0.45);
@@ -679,7 +731,48 @@ def render_custom_css():
         color: var(--text-secondary);
         font-size: var(--fs-sm);
         line-height: 1.45;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .fee-outlook-percent {
+        color: var(--text-secondary);
+        font-size: var(--fs-sm);
+        line-height: 1.35;
+        margin: 0 0 6px 0;
+    }
+
+    .fee-outlook-facts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-2);
+        margin: 8px 0 6px 0;
+    }
+
+    .fee-outlook-fact {
+        border: 1px solid rgba(156, 163, 175, 0.18);
+        border-radius: 10px;
+        background: rgba(31, 41, 55, 0.45);
+        padding: 8px 10px;
+    }
+
+    .fee-outlook-fact-label {
+        color: var(--text-secondary);
+        font-size: var(--fs-xs);
+        font-weight: var(--fw-medium);
+        margin: 0 0 2px 0;
+    }
+
+    .fee-outlook-fact-value {
+        color: var(--text-primary);
+        font-size: var(--fs-sm);
+        font-weight: var(--fw-semibold);
         margin: 0;
+    }
+
+    .fee-outlook-note strong {
+        color: var(--text-primary);
+        font-weight: var(--fw-semibold);
     }
     
     .money-alert-warning { border-left: 4px solid  var(--accent-yellow); }
@@ -699,9 +792,10 @@ def render_custom_css():
 
     .money-alert-muted {
         color: #9CA3AF;
-        font-size: var(--fs-sm);
+        font-size: var(--fs-xs);
         line-height: 1.45;
-        margin-top: 6px;
+        margin-top: 13px;
+        font-style: italic;
     }
 
     .opportunity-amount {
@@ -1043,7 +1137,7 @@ def get_brand_color(card_name):
     return "#555555" # Changed to Grey (Neutral) instead of Red (Danger)
 
 # 3. SIDEBAR INPUTS
-def render_sidebar(card_list):
+def render_sidebar(card_list, reset_callback=None):
     """Renders the sidebar and returns a dictionary of user inputs."""
     with st.sidebar:
         st.header("Financial Profile")
@@ -1152,16 +1246,14 @@ def render_sidebar(card_list):
                 border-radius: 8px;
                 font-size: var(--fs-sm);
                 font-weight: var(--fw-medium);
-                width: auto;
-                min-width: 140px;
-                max-width: 100%;
+                width: 100%;
                 min-height: 38px;
                 white-space: nowrap;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 text-align: center;
-                margin: 8px auto 0 auto;
+                margin: 8px 0 0 0;
             }
             div.st-key-reset_btn button:hover {
                 border-color: #6B7280;
@@ -1171,7 +1263,12 @@ def render_sidebar(card_list):
             """, unsafe_allow_html=True)
             calculate_button = st.button("🔍 See recommendations", key="calculate_btn", help="View personalized card recommendations")
             st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
-            reset_button = st.button("Reset inputs", key="reset_btn" , help="Clear all inputs and start fresh.")
+            reset_button = st.button(
+                "Reset inputs",
+                key="reset_btn",
+                help="Clear all inputs and start fresh.",
+                on_click=reset_callback
+            )
             
 
 
@@ -1196,7 +1293,6 @@ def render_sidebar(card_list):
         "ask_ai_clicked": ask_ai_clicked,
         "current_card_name": current_card_name,
         "calculate_button" : calculate_button,
-        "reset_button": reset_button,
         "max_spend_dict": max_spend_dict
         }
 
@@ -1330,78 +1426,106 @@ def render_results(best_card, valid_cards_df, spends, verdict, comparison_data=N
         st.markdown(
         """
             <div class="section-header">
-            Card Fit Snapshot
+            Why This Card Fits
             </div>
             """,unsafe_allow_html=True
                 )
+        st.markdown("""<div class="section-subtitle">A quick fit check based on your spending mix and annual fee math.</div>""", unsafe_allow_html=True)
         st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
 
-        with st.expander("View card details"):
-            status = html.escape(str(best_card.get("Status", "Stable")))
-            st.markdown(f"""<div class="fit-status-chip">Current status: {status}</div>""", unsafe_allow_html=True)
-            col1, col2, col3 = st.columns(3)
+        status = html.escape(str(best_card.get("Status", "Stable")))
+        st.markdown(f"""<div class="fit-status-chip">Current status: {status}</div>""", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns(3)
 
-            st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
-            # 3. Reward Type 
-            col1.metric("💳 Category", best_card['Reward Type'],height="content")
-            col2.metric("📈 Annual Fee", format_inr(best_card['Fee']))
-            col3.metric("% Base Reward Rate", f"{best_card['Base Rate']}%")
+        st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
+        # 3. Reward Type 
+        col1.metric("💳 Category", best_card['Reward Type'],height="content")
+        col2.metric("📈 Annual Fee", format_inr(best_card['Fee']))
+        col3.metric("% Base Reward Rate", f"{best_card['Base Rate']}%")
 
-            with st.container(border=False):
+        with st.container(border=False):
 
-                st.markdown("""<div class="content-heading">Why this card may fit</div>""", unsafe_allow_html=True)
-                st.markdown(
-                    f"""<div class="money-alert--box money-alert-success"><b>Potential Upside:</b> {best_card['Pro_Reason']}</div>""",
-                    unsafe_allow_html=True
-                )
-                st.markdown('<div class="spacer-md"></div>', unsafe_allow_html=True)
-                st.markdown("""<div class="content-heading">Where it may fall short</div>""", unsafe_allow_html=True)
-                st.markdown(f"""<div class="money-alert--box money-alert-warning" ><b>Potential Limitations:</b> {best_card['Con_Reason']}</div>""", unsafe_allow_html=True)
-                st.markdown('<div class="spacer-md"></div>', unsafe_allow_html=True)
-                st.markdown("""<div class="content-heading">Fee Recovery Estimate</div>""", unsafe_allow_html=True)
+            st.markdown("""<div class="content-heading">Why this card may fit</div>""", unsafe_allow_html=True)
+            st.markdown(
+                f"""<div class="money-alert--box money-alert-success"><b>Potential Upside:</b> {best_card['Pro_Reason']}</div>""",
+                unsafe_allow_html=True
+            )
+            st.markdown('<div class="spacer-md"></div>', unsafe_allow_html=True)
+            st.markdown("""<div class="content-heading">Where it may fall short</div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="money-alert--box money-alert-warning" ><b>Potential Limitations:</b> {best_card['Con_Reason']}</div>""", unsafe_allow_html=True)
+            st.markdown('<div class="spacer-md"></div>', unsafe_allow_html=True)
+            st.markdown("""<div class="content-heading">Fee Recovery Estimate</div>""", unsafe_allow_html=True)
 
-                fee_value = float(best_card.get("Fee", 0) or 0)
-                spend_value = format_inr(spends.get("total", 0))
-                fee_label = format_inr(fee_value)
+            fee_value = float(best_card.get("Fee", 0) or 0)
+            spend_value = format_inr(spends.get("total", 0))
+            fee_label = format_inr(fee_value)
+            annual_reward_raw = max(0.0, float(best_card.get("Net Savings", 0)) + fee_value)
 
-                if fee_value <= 0:
-                    recovered_pct = 100
-                    summary_line = "No annual fee. You start net-positive from month 1."
-                    detail_line = "Estimated annual fee recovery: 100%."
+            if fee_value <= 0:
+                recovered_pct = 100
+                break_even_value = "Month 1"
+                recovered_value = fee_label
+                status_label = "Excellent"
+                status_class = "fee-outlook-status fee-outlook-status--excellent"
+                interpretation = "No annual fee. You are net-positive from month 1."
+            else:
+                recovered_ratio = min(annual_reward_raw / fee_value, 1.0)
+                recovered_pct = int(round(recovered_ratio * 100))
+                monthly_reward = annual_reward_raw / 12
+                recovered_value = format_inr((recovered_pct / 100) * fee_value)
+
+                if monthly_reward <= 0:
+                    break_even_value = "Not recovered"
+                    interpretation = f"At <strong>{spend_value}/month</strong>, current rewards may not recover the annual fee."
                 else:
-                    annual_reward = max(0.0, float(best_card.get("Net Savings", 0)) + fee_value)
-                    recovered_ratio = min(annual_reward / fee_value, 1.0)
-                    recovered_pct = int(round(recovered_ratio * 100))
-                    monthly_reward = annual_reward / 12
-
-                    if monthly_reward <= 0:
-                        summary_line = "Current spend is unlikely to recover the annual fee."
+                    months_to_break_even = fee_value / monthly_reward
+                    if months_to_break_even <= 12:
+                        month_count = max(1, int(round(months_to_break_even)))
+                        month_label = "month" if month_count == 1 else "months"
+                        break_even_value = f"~{month_count} {month_label}"
+                        interpretation = f"At <strong>{spend_value}/month</strong>, fee recovery is expected within a year."
                     else:
-                        months_to_break_even = fee_value / monthly_reward
-                        if months_to_break_even <= 12:
-                            month_count = max(1, int(round(months_to_break_even)))
-                            month_label = "month" if month_count == 1 else "months"
-                            summary_line = f"At {spend_value}/month spend, fee recovery is ~{month_count} {month_label}."
-                        else:
-                            summary_line = f"At {spend_value}/month spend, full fee recovery may take over 12 months."
+                        break_even_value = ">12 months"
+                        interpretation = f"At <strong>{spend_value}/month</strong>, full fee recovery may take over 12 months."
 
-                    detail_line = f"Estimated annual fee recovery: {recovered_pct}% of {fee_label}."
+                if recovered_pct >= 90:
+                    status_label = "Excellent"
+                    status_class = "fee-outlook-status fee-outlook-status--excellent"
+                elif recovered_pct >= 60:
+                    status_label = "Moderate"
+                    status_class = "fee-outlook-status fee-outlook-status--moderate"
+                else:
+                    status_label = "Weak"
+                    status_class = "fee-outlook-status fee-outlook-status--weak"
 
-                st.markdown(
-                    f"""
-                    <div class="fee-outlook-card">
-                        <div class="fee-outlook-title">Fee Recovery Outlook ({fee_label} annual fee)</div>
-                        <div class="fee-outlook-bar">
-                            <div class="fee-outlook-fill" style="width: {recovered_pct}%;"></div>
-                        </div>
-                        <div class="fee-outlook-note">{summary_line}</div>
-                        <div class="fee-outlook-note">{detail_line}</div>
+            st.markdown(
+                f"""
+                <div class="fee-outlook-card">
+                    <div class="fee-outlook-head">
+                        <div class="fee-outlook-title">Fee Recovery Outlook</div>
+                        <div class="{status_class}">{status_label}</div>
                     </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+                    <div class="fee-outlook-percent">Recovery: <strong>{recovered_pct}%</strong> of <strong>{fee_label}</strong></div>
+                    <div class="fee-outlook-bar">
+                        <div class="fee-outlook-fill" style="width: {recovered_pct}%;"></div>
+                    </div>
+                    <div class="fee-outlook-facts">
+                        <div class="fee-outlook-fact">
+                            <div class="fee-outlook-fact-label">Break-even</div>
+                            <div class="fee-outlook-fact-value">{break_even_value}</div>
+                        </div>
+                        <div class="fee-outlook-fact">
+                            <div class="fee-outlook-fact-label">Recovered value</div>
+                            <div class="fee-outlook-fact-value">{recovered_value}</div>
+                        </div>
+                    </div>
+                    <div class="fee-outlook-note">{interpretation}</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
-            st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
 
 
     #st.divider()
@@ -1411,23 +1535,22 @@ def render_results(best_card, valid_cards_df, spends, verdict, comparison_data=N
         st.markdown(
         """
             <div class="section-header">
-                Market vs CredLens
+                Popularity vs Personal Value
             </div>
             """,unsafe_allow_html=True
                 )
-        st.markdown("""<div class="meta-caption compare-subtitle">Same card, two scoring lenses.</div>""", unsafe_allow_html=True)
+        st.markdown("""<div class="section-subtitle">Compare public popularity with your personalized value estimate.</div>""", unsafe_allow_html=True)
         st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
-        with st.expander("View market comparison"):
-            with st.container(border=False):
-                # Dynamic class for verdict pill tone
-                if "Negative" in verdict:
-                    v_class = "v-danger"
-                elif "Gem" in verdict or "Top" in verdict:
-                    v_class = "v-success"
-                else:
-                    v_class = "v-neutral"
+        with st.container(border=False):
+            # Dynamic class for verdict pill tone
+            if "Negative" in verdict:
+                v_class = "v-danger"
+            elif "Gem" in verdict or "Top" in verdict:
+                v_class = "v-success"
+            else:
+                v_class = "v-neutral"
 
-                comparison_html = f"""
+            comparison_html = f"""
 <div class="compare-shell">
   <div class="compare-card">
     <span class="compare-badge">Popularity</span>
@@ -1452,7 +1575,7 @@ def render_results(best_card, valid_cards_df, spends, verdict, comparison_data=N
   </div>
 </div>
 """
-                st.markdown(comparison_html, unsafe_allow_html=True)
+            st.markdown(comparison_html, unsafe_allow_html=True)
 
     
     # with st.container(border=False):
@@ -1482,10 +1605,11 @@ def render_results(best_card, valid_cards_df, spends, verdict, comparison_data=N
         st.markdown(
         """
             <div class="section-header">
-                Should You Switch?
+                Current Card Comparison
             </div>
             """,unsafe_allow_html=True
                 )
+        st.markdown("""<div class="section-subtitle">See how your current card compares against the top recommendation.</div>""", unsafe_allow_html=True)
         st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
 
         with st.expander("View switch analysis"):
@@ -1499,11 +1623,12 @@ def render_results(best_card, valid_cards_df, spends, verdict, comparison_data=N
 
 
                 # 2. THE "SAME CARD" VALIDATION
-                elif comparison_data['type'] == 'same_card' and comparison_data["current_card_name"] == best_card['Card Name']:
+                elif comparison_data['type'] == 'same_card' and comparison_data.get("current_card_name") == best_card['Card Name']:
                     st.success(f"You already hold **{best_card['Card Name']}**. Based on current inputs, it remains a strong fit.")
                 
-                elif comparison_data['type'] == 'same_card' and comparison_data["current_card_name"] != best_card['Card Name']:
-                    st.success(f"Your current **{comparison_data['current_card_name']}** card is performing comparably for your current spend profile.")
+                elif comparison_data['type'] == 'same_card' and comparison_data.get("current_card_name") != best_card['Card Name']:
+                    curr_name = comparison_data.get("current_card_name", "current card")
+                    st.success(f"Your current **{curr_name}** card is performing comparably for your current spend profile.")
 
                 # 3. THE "lounge access CARD" VALIDATION
                 elif comparison_data['type'] == 'no_card_lounge':
@@ -1516,17 +1641,17 @@ def render_results(best_card, valid_cards_df, spends, verdict, comparison_data=N
 
                     # Dynamic analogy
                     if diff < 2000:
-                        analogy = "roughly offsets one to two casual dining bills."
+                        analogy = "Roughly offsets one to two casual dining bills."
                     elif diff < 5000:
-                        analogy = "roughly offsets a year of streaming and Wi-Fi bills."
+                        analogy = "Roughly offsets a year of streaming and Wi-Fi bills."
                     elif diff < 10000:
-                        analogy = "roughly offsets a low-cost domestic flight."
+                        analogy = "Roughly offsets a low-cost domestic flight."
                     elif diff < 25000:
-                        analogy = "roughly offsets a mid-range phone purchase."
+                        analogy = "Roughly offsets a mid-range phone purchase."
                     elif diff == 0:
-                        analogy = "results are effectively similar."
+                        analogy = "Results are effectively similar."
                     else:
-                        analogy = "could materially offset a larger annual expense."
+                        analogy = "Could materially offset a larger annual expense."
 
                     if diff > 0:
                         curr_name_safe = html.escape(str(curr_name))
@@ -1629,45 +1754,43 @@ def render_results(best_card, valid_cards_df, spends, verdict, comparison_data=N
         top3_display["Fee"] = top3_display["Fee"].apply(format_inr)
         st.dataframe(top3_display, use_container_width=True, hide_index=True)
 
-        with st.expander("See ranking chart"):
-            chart_data = valid_cards_df.head(5).copy()
-            c = alt.Chart(chart_data).mark_bar(cornerRadiusTopRight=10, cornerRadiusBottomRight=10).encode(
-                x=alt.X('Net Savings', title='Net Annual Value (₹)'),
-                y=alt.Y('Card Name', sort='-x', title=None),
-                color=alt.Color('Net Savings', scale=alt.Scale(scheme='greens'), legend=None)
-            ).properties(height=320)
-            st.altair_chart(c, use_container_width=True)
+        chart_data = valid_cards_df.head(5).copy()
+        c = alt.Chart(chart_data).mark_bar(cornerRadiusTopRight=10, cornerRadiusBottomRight=10).encode(
+            x=alt.X('Net Savings', title='Net Annual Value (₹)'),
+            y=alt.Y('Card Name', sort='-x', title=None),
+            color=alt.Color('Net Savings', scale=alt.Scale(scheme='greens'), legend=None)
+        ).properties(height=320)
+        st.altair_chart(c, use_container_width=True)
         
-        with st.expander("Detailed comparison table"):
-                # Define the columns we WANT to show
-            display_cols = [
-                "Card Name", "Status", "Net Savings", "Fee", 
-                "Reward Type", "Min Income", "Warning_Text"
-            ]
-            
-            # Filter the dataframe to only show these columns (if they exist)
-            # We use list intersection to avoid errors if a column is missing
-            final_cols = [c for c in display_cols if c in valid_cards_df.columns]
-            
-            display_df = valid_cards_df[final_cols].copy()
-            
-            # Format the numbers for display
-            if "Net Savings" in display_df.columns:
-                display_df["Net Savings"] = display_df["Net Savings"].apply(format_inr)
-            
-            st.dataframe(
-                display_df,
-                use_container_width=True,
-                hide_index=True,
-                column_config={
-                    "Status": st.column_config.TextColumn(
-                        "Status",
-                        help="Hot, Stable, or Devalued",
-                        width="small"
-                    ),
-                    "Warning_Text": st.column_config.TextColumn(
-                        "Warnings",
-                        width="medium"
-                    )
-                }
-            )
+        # Define the columns we WANT to show
+        display_cols = [
+            "Card Name", "Status", "Net Savings", "Fee", 
+            "Reward Type", "Min Income", "Warning_Text"
+        ]
+        
+        # Filter the dataframe to only show these columns (if they exist)
+        # We use list intersection to avoid errors if a column is missing
+        final_cols = [c for c in display_cols if c in valid_cards_df.columns]
+        
+        display_df = valid_cards_df[final_cols].copy()
+        
+        # Format the numbers for display
+        if "Net Savings" in display_df.columns:
+            display_df["Net Savings"] = display_df["Net Savings"].apply(format_inr)
+        
+        st.dataframe(
+            display_df,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Status": st.column_config.TextColumn(
+                    "Status",
+                    help="Hot, Stable, or Devalued",
+                    width="small"
+                ),
+                "Warning_Text": st.column_config.TextColumn(
+                    "Warnings",
+                    width="medium"
+                )
+            }
+        )
