@@ -63,8 +63,8 @@ def render_custom_css():
     --accent-yellow: #FF9900;
 
     --font-family-base: "Manrope", "Segoe UI", sans-serif;
-    --fs-xs: 0.75rem;
-    --fs-sm: 0.875rem;
+    --fs-xs: 0.8125rem;
+    --fs-sm: 0.95rem;
     --fs-md: 1rem;
     --fs-lg: 1.125rem;
     --fs-xl: 1.25rem;
@@ -933,6 +933,29 @@ def render_custom_css():
         margin: 0 0 var(--space-2) 0;
     }
 
+    .final-cta-card {
+        border: 1px solid rgba(96, 165, 250, 0.35);
+        background: rgba(17, 24, 39, 0.3);
+        border-radius: 12px;
+        padding: 14px;
+        margin: 0 0 var(--space-2) 0;
+    }
+
+    .final-cta-title {
+        color: var(--text-primary);
+        font-size: var(--fs-lg);
+        font-weight: var(--fw-semibold);
+        line-height: 1.3;
+        margin: 0 0 6px 0;
+    }
+
+    .final-cta-note {
+        color: var(--text-secondary);
+        font-size: var(--fs-sm);
+        line-height: 1.45;
+        margin: 0 0 10px 0;
+    }
+
     /* Comparison panel for market vs personalized verdict. */
     .compare-shell {
         display: flex;
@@ -1483,7 +1506,7 @@ def render_results(best_card, valid_cards_df, spends, verdict, comparison_data=N
                         month_count = max(1, int(round(months_to_break_even)))
                         month_label = "month" if month_count == 1 else "months"
                         break_even_value = f"~{month_count} {month_label}"
-                        interpretation = f"At <strong>{spend_value}/month</strong>, fee recovery is expected within a year."
+                        interpretation = f"At <strong>{spend_value}/month</strong>, full fee recovery is expected within a year."
                     else:
                         break_even_value = ">12 months"
                         interpretation = f"At <strong>{spend_value}/month</strong>, full fee recovery may take over 12 months."
@@ -1511,7 +1534,7 @@ def render_results(best_card, valid_cards_df, spends, verdict, comparison_data=N
                     </div>
                     <div class="fee-outlook-facts">
                         <div class="fee-outlook-fact">
-                            <div class="fee-outlook-fact-label">Break-even</div>
+                            <div class="fee-outlook-fact-label">Break-even (Annual fees vs Rewards)</div>
                             <div class="fee-outlook-fact-value">{break_even_value}</div>
                         </div>
                         <div class="fee-outlook-fact">
@@ -1690,12 +1713,33 @@ def render_results(best_card, valid_cards_df, spends, verdict, comparison_data=N
     # 5. RESTORED: The Math Expander 
     # This now uses the 'spends' argument we added
     st.markdown('<div class="spacer-md"></div>', unsafe_allow_html=True)
-    st.markdown(
-        """<div class="assumption-note">Estimates are derived from your monthly inputs, published reward rates, annual fees, and simplified cap assumptions.</div>""",
-        unsafe_allow_html=True
-    )
-    st.markdown("---")
-    with st.expander("How we estimated your result"):
+
+    # End-of-flow CTA to keep users focused on the primary action.
+    with st.container(border=False):
+        link = best_card.get("Apply_Link")
+        if pd.notna(link):
+            color = get_brand_color(best_card["Card Name"])
+            st.markdown(
+                f"""
+                <div class="final-cta-card">
+                    <div class="final-cta-title">Ready to act on this recommendation?</div>
+                    <div class="final-cta-note">Apply for <strong>{html.escape(str(best_card['Card Name']))}</strong> or update your spending inputs to re-check the recommendation.</div>
+                    <div class="apply-cta-wrap" style="--apply-btn-color: {color}; margin-top: 0;">
+                        <a href="{link}" target="_blank" class="apply-cta-link">
+                            <button class="apply-btn">Apply for {html.escape(str(best_card['Card Name']))}</button>
+                        </a>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        st.markdown("""<div class="assumption-note">Want to validate the math first? Open Advanced details below.</div>""", unsafe_allow_html=True)
+
+    with st.expander("Advanced details (math and full table)"):
+        st.markdown(
+            """<div class="assumption-note">Estimates are derived from your monthly inputs, published reward rates, annual fees, and simplified cap assumptions.</div>""",
+            unsafe_allow_html=True
+        )
         st.markdown(
             """<div class="muted-text">Your estimate is computed category by category, then annual fee is subtracted.</div>""",
             unsafe_allow_html=True
