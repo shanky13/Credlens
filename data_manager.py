@@ -23,7 +23,15 @@ def load_card_data(csv_path: str = "cards.csv") -> pd.DataFrame:
             'Image_URL': None,
             'Apply_Link': None,
             'Status': "Stable", # Default status for Devaluation Tracker
-            'Warning_Text': None
+            'Warning_Text': None,
+            # New scoring data-contract fields (with safe fallbacks).
+            'Reward_Value': 1.0,
+            'Reward_Realization_Type': "",
+            'Reward_Cap_Type': "",
+            'Fee_Waiver_Spend': 999999999,
+            'Reward_Exclusion_Categories': "",
+            'Forex_Markup': 0.0,
+            'Approval_Difficulty': "Medium"
         }
         
         for col, default_val in defaults.items():

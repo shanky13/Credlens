@@ -166,11 +166,11 @@ def main():
                     
                     # Run the Math
                     current_savings = logic.calculate_card_yield(current_card_row, user_inputs['spends'])
-                    current_card_lounge = current_card_row['Lounge Access']
                     diff = best_card['Net Savings'] - current_savings
                     
-                    # Only show if there's a real difference
-                    if abs(diff) > 100 and current_card_lounge == 'Yes':
+                    # Only show if there's a real difference.
+                    # Note: lounge eligibility is already handled by the earlier filter when enabled.
+                    if abs(diff) > 100:
                         comparison_result = {
                             "type": "switch",
                             "current_card_name": current_card_name,
@@ -205,6 +205,10 @@ def main():
                 net_savings=best_card['Net Savings'],
                 fee=best_card['Fee']
             )
+            truth_insight = logic.build_credlens_truth_insight(
+                best_card,
+                monthly_total_spend=user_inputs['spends']['total']
+            )
 
             # RENDER THE RESULTS (Using UI Module)
             ui.render_results(
@@ -212,6 +216,7 @@ def main():
                 valid_cards_df=valid_cards,
                 spends = user_inputs["spends"],
                 verdict = verdict,
+                truth_insight=truth_insight,
                 comparison_data = comparison_result,
                 max_spend_dict = user_inputs["max_spend_dict"],
                 wants_lounge = user_inputs["wants_lounge"]
