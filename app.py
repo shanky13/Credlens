@@ -133,61 +133,8 @@ def main():
         if not valid_cards.empty:
             best_card = valid_cards.iloc[0]
 
-            # --- NEW: SMART COMPARISON LOGIC (3 Scenarios) ---
-            comparison_result = None
             current_card_name = user_inputs.get('current_card_name')
-            
-            # SCENARIO 1: User has NO card (The Nudge)
-            if current_card_name == "I don't have a card":
-                comparison_result = {
-                    "type": "no_card"
-                    
-                }
-                
-            # SCENARIO 2: User ALREADY has the Winner (The Validation)
-            elif current_card_name == best_card['Card Name']:
-                comparison_result = {
-                    "type": "same_card",
-                    "current_card_name": current_card_name
-                    
-                }
-
-            # SCENARIO 3: User has a DIFFERENT card (The Switch Math)
-            elif current_card_name:
-                # Find the row for the current card in the ORIGINAL dataframe
-                
-                current_card_row = df[df['Card Name'] == current_card_name]
-                # Apply lounge filter if needed
-                if user_inputs['wants_lounge']:
-                    current_card_row = current_card_row[current_card_row['Lounge Access'] == 'Yes'] 
-                
-                if not current_card_row.empty:
-                    current_card_row = current_card_row.iloc[0]
-                    
-                    # Run the Math
-                    current_savings = logic.calculate_card_yield(current_card_row, user_inputs['spends'])
-                    diff = best_card['Net Savings'] - current_savings
-                    
-                    # Only show if there's a real difference.
-                    # Note: lounge eligibility is already handled by the earlier filter when enabled.
-                    if abs(diff) > 100:
-                        comparison_result = {
-                            "type": "switch",
-                            "current_card_name": current_card_name,
-                            "diff": int(diff),
-                            "current_savings": int(current_savings) 
-                        }
-                    else:
-                        comparison_result = {
-                            "type": "same_card",
-                            "current_card_name": current_card_name
-                        }
-
-                else:
-                    comparison_result = {
-                        "type": "no_card_lounge",
-                        "current_card_name": current_card_name
-                    }
+            comparison_result = logic.check_current_card(best_card, df, user_inputs)  
 
 
             # Get AI Verdict (Using Logic Module - Feature Flag Checked)

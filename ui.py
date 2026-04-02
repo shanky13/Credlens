@@ -127,7 +127,7 @@ def render_custom_css():
 
     .muted-text {
         color: var(--text-secondary);
-        font-size: var(--fs-sm);
+        font-size: var(--fs-xs);
         line-height: 1.5;
         margin-bottom: var(--space-3);
     }
@@ -158,6 +158,12 @@ def render_custom_css():
     .spacer-sm { margin-bottom: var(--space-2); }
     .spacer-md { margin-bottom: var(--space-4); }
     .spacer-lg { margin-bottom: var(--space-6); }
+
+    .section-divider {
+        height: 1px;
+        margin: var(--space-2) 0 var(--space-3) 0;
+        background: linear-gradient(90deg, transparent, rgba(156, 163, 175, 0.35), transparent);
+    }
 
     /* ---------- Headline blocks ---------- */
     .page-title {
@@ -217,14 +223,15 @@ def render_custom_css():
         color: var(--text-secondary);
         font-size: var(--fs-sm);
         line-height: 1.4;
-        margin: 0 0 var(--space-2) 0;
+        margin: 0 0 var(--space-2) 14px;
+        max-width: 62ch;
     }
 
     .best-card-name {
         display: inline-block;
         max-width: 100%;
         word-break: break-word;
-        font-size: var(--fs-display-lg);
+        font-size: var(--fs-xl);
         font-weight: var(--fw-semibold);
         color: #F9FAFB;
         letter-spacing: -0.01em;
@@ -248,6 +255,234 @@ def render_custom_css():
         font-size: var(--fs-sm);
         line-height: 1.4;
         margin: var(--space-1) 0 var(--space-2) 0;
+    }
+
+    .best-card-confidence {
+        color: rgba(156, 163, 175, 0.75);
+        font-size: 0.68rem;
+        line-height: 1.3;
+        margin: 2px 0 var(--space-2) 0;
+    }
+
+    .best-card-fit {
+        color: var(--text-primary);
+        font-size: var(--fs-md);
+        font-weight: var(--fw-medium);
+        line-height: 1.5;
+        margin: var(--space-3) 0 var(--space-2) 0;
+    }
+
+    .best-card-caution {
+        color: #FDE68A;
+        font-size: var(--fs-sm);
+        line-height: 1.45;
+        margin: 0 0 var(--space-2) 0;
+    }
+
+    .hero-context-line {
+        color: var(--text-secondary);
+        font-size: var(--fs-sm);
+        line-height: 1.4;
+        margin: 0 0 var(--space-3) 0;
+    }
+
+    .hero-story {
+        display: grid;
+        gap: 8px;
+        margin: var(--space-2) 0 var(--space-2) 0;
+    }
+
+    .hero-story-card {
+        border: 1px solid rgba(156, 163, 175, 0.2);
+        background: rgba(17, 24, 39, 0.34);
+        border-radius: 12px;
+        padding: 8px 10px;
+    }
+
+    .hero-story-card--compact {
+        padding: 6px 8px;
+    }
+
+    .hero-story-card--accent {
+        border-color: rgba(59, 130, 246, 0.36);
+        background: rgba(30, 58, 138, 0.18);
+    }
+
+    .hero-story-kicker {
+        color: #BFDBFE;
+        font-size: var(--fs-xs);
+        font-weight: var(--fw-semibold);
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        margin: 0 0 6px 0;
+    }
+
+    .hero-story-copy {
+        color: var(--text-primary);
+        font-size: var(--fs-md);
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    .hero-story-copy strong {
+        color: #F9FAFB;
+        font-weight: var(--fw-semibold);
+    }
+
+    .hero-story-context {
+        color: var(--text-secondary);
+        font-size: var(--fs-xs);
+        line-height: 1.35;
+        margin-top: 4px;
+        font-style: italic;
+    }
+
+    .hero-mini-table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid rgba(156, 163, 175, 0.18);
+        background: rgba(17, 24, 39, 0.2);
+        margin-top: 0;
+        overflow: hidden;
+        border-radius: 10px;
+    }
+
+    .hero-mini-table th,
+    .hero-mini-table td {
+        border-bottom: 1px solid rgba(156, 163, 175, 0.12);
+        padding: 6px 9px;
+        vertical-align: middle;
+        text-align: left;
+    }
+
+    .hero-mini-table tr:last-child th,
+    .hero-mini-table tr:last-child td {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .hero-mini-table th {
+        width: 18%;
+        color: var(--text-secondary);
+        font-size: 0.68rem;
+        font-weight: var(--fw-semibold);
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        border-right: 1px solid rgba(156, 163, 175, 0.1);
+    }
+
+    .hero-mini-table td {
+        color: var(--text-primary);
+        font-size: 0.85rem;
+        font-weight: var(--fw-medium);
+        line-height: 1.3;
+    }
+
+    .hero-mini-value {
+        color: #F9FAFB;
+        font-weight: var(--fw-semibold);
+    }
+
+    .hero-mini-sub {
+        color: var(--text-secondary);
+        font-size: var(--fs-xs);
+        line-height: 1.3;
+        margin-top: 2px;
+    }
+
+    .hero-mini-sub--muted {
+        color: rgba(229, 231, 235, 0.7);
+        font-style: italic;
+    }
+
+    .hero-inline-badge {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 3px 8px;
+        border: 1px solid rgba(59, 130, 246, 0.35);
+        background: rgba(30, 58, 138, 0.22);
+        color: #DBEAFE;
+        font-size: var(--fs-xs);
+        font-weight: var(--fw-semibold);
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+        .hero-mini-table th {
+            width: 24%;
+        }
+        div[class*="st-key-styled_container_"] {
+            padding: 20px 16px;
+        }
+        div[class*="st-key-styled_container_feature_"] {
+            padding: 18px 14px;
+        }
+        .hero-story-card {
+            padding: 7px 8px;
+        }
+        .hero-story-card--compact {
+            padding: 5px 7px;
+        }
+        .apply-cta-wrap {
+            padding: var(--space-2) var(--space-3);
+        }
+        .apply-btn {
+            width: 100%;
+            padding: 11px 16px;
+        }
+        .final-cta-card {
+            padding: 12px;
+        }
+        .final-cta-note {
+            font-size: var(--fs-sm);
+        }
+    }
+
+    .hero-secondary-link {
+        display: inline-block;
+        color: #BFDBFE;
+        font-size: var(--fs-sm);
+        font-weight: var(--fw-medium);
+        line-height: 1.35;
+        text-decoration: none;
+        margin-top: var(--space-2);
+    }
+
+    .hero-secondary-link:hover {
+        color: #DBEAFE;
+        text-decoration: underline;
+    }
+
+    .hero-note-chip {
+        display: inline-block;
+        border: 1px solid rgba(34, 197, 94, 0.25);
+        color: #BBF7D0;
+        background: rgba(20, 83, 45, 0.35);
+        border-radius: 999px;
+        font-size: var(--fs-xs);
+        font-weight: var(--fw-medium);
+        line-height: 1.25;
+        padding: 4px 9px;
+        margin: 0 0 var(--space-2) 0;
+    }
+
+    .method-note {
+        color: var(--text-tertiary);
+        font-size: var(--fs-xs);
+        font-style: italic;
+        line-height: 1.4;
+        margin: var(--space-2) 2px 0 2px;
+    }
+
+    .secondary-note {
+        color: var(--text-tertiary);
+        font-size: var(--fs-xs);
+        line-height: 1.4;
+        margin: var(--space-3) 2px 0 2px;
     }
 
     .hero-meta-row {
@@ -473,6 +708,124 @@ def render_custom_css():
         background: rgba(30, 58, 138, 0.25);
     }
 
+    .hero-snapshot-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-2);
+        margin: 0 0 var(--space-2) 0;
+    }
+
+    .hero-snapshot-card {
+        border: 1px solid rgba(156, 163, 175, 0.2);
+        background: rgba(31, 41, 55, 0.42);
+        border-radius: 10px;
+        padding: 8px 10px;
+    }
+
+    .hero-snapshot-title {
+        color: var(--text-secondary);
+        font-size: var(--fs-xs);
+        font-weight: var(--fw-semibold);
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        margin: 0 0 6px 0;
+    }
+
+    .hero-snapshot-line {
+        color: var(--text-secondary);
+        font-size: var(--fs-xs);
+        line-height: 1.35;
+        margin: 0 0 4px 0;
+    }
+
+    .hero-snapshot-line strong {
+        color: var(--text-primary);
+        font-weight: var(--fw-semibold);
+    }
+
+    .hero-snapshot-metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin: 0 0 8px 0;
+    }
+
+    .hero-snapshot-metric {
+        border: 1px solid rgba(156, 163, 175, 0.18);
+        background: rgba(17, 24, 39, 0.46);
+        border-radius: 8px;
+        padding: 7px 8px;
+    }
+
+    .hero-snapshot-metric-label {
+        color: var(--text-secondary);
+        font-size: var(--fs-xs);
+        line-height: 1.2;
+        margin: 0 0 2px 0;
+    }
+
+    .hero-snapshot-metric-value {
+        color: var(--text-primary);
+        font-size: var(--fs-sm);
+        font-weight: var(--fw-semibold);
+        line-height: 1.3;
+        margin: 0;
+    }
+
+    .hero-pref-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0;
+    }
+
+    .hero-pref-chip {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 3px 8px;
+        font-size: var(--fs-xs);
+        line-height: 1.25;
+        border: 1px solid rgba(156, 163, 175, 0.2);
+        color: var(--text-secondary);
+        background: rgba(17, 24, 39, 0.45);
+    }
+
+    .hero-pref-chip--active {
+        color: #BFDBFE;
+        border-color: rgba(59, 130, 246, 0.45);
+        background: rgba(30, 58, 138, 0.25);
+    }
+
+    .card-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 8px 0 10px 0;
+        justify-content: center;
+    }
+
+    .card-meta-chip {
+        display: inline-block;
+        border: 1px solid rgba(156, 163, 175, 0.24);
+        background: rgba(31, 41, 55, 0.45);
+        color: var(--text-secondary);
+        font-size: var(--fs-xs);
+        font-weight: var(--fw-medium);
+        border-radius: 999px;
+        padding: 3px 9px;
+        line-height: 1.25;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+        .hero-snapshot-grid {
+            grid-template-columns: 1fr;
+        }
+        .hero-snapshot-metrics {
+            grid-template-columns: 1fr;
+        }
+    }
+
     .alt-card-preview {
         border: 1px solid rgba(156, 163, 175, 0.24);
         background: rgba(17, 24, 39, 0.3);
@@ -601,24 +954,26 @@ def render_custom_css():
         align-items: center;
         justify-content: space-between;
         gap: var(--space-2);
-        padding: 8px 10px;
-        border-radius: 8px;
-        border: 1px solid rgba(156, 163, 175, 0.22);
-        background: rgba(17, 24, 39, 0.35);
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(59, 130, 246, 0.18);
+        background: linear-gradient(180deg, rgba(31, 41, 55, 0.72), rgba(17, 24, 39, 0.52));
     }
 
     .total-spend-label {
-        color: var(--text-secondary);
-        font-size: var(--fs-sm);
-        font-weight: var(--fw-medium);
+        color: #BFDBFE;
+        font-size: 0.72rem;
+        font-weight: var(--fw-semibold);
         line-height: 1.3;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
     }
 
     .total-spend-value {
-        color: var(--text-primary);
-        font-size: var(--fs-md);
-        font-weight: var(--fw-semibold);
-        line-height: 1.3;
+        color: #F9FAFB;
+        font-size: var(--fs-lg);
+        font-weight: var(--fw-bold);
+        line-height: 1.2;
         white-space: nowrap;
     }
 
@@ -894,6 +1249,22 @@ def render_custom_css():
         margin-bottom: 6px;
     }
 
+    .money-alert-title--verdict {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 10px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(59, 130, 246, 0.18);
+        border: 1px solid rgba(96, 165, 250, 0.35);
+        color: #DBEAFE;
+        font-size: var(--fs-xs);
+        font-weight: var(--fw-semibold);
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+
     .money-alert strong {
         color: var(--text-primary);
         font-weight: var(--fw-bold);
@@ -1138,6 +1509,40 @@ def render_custom_css():
         margin: 2px 0 0 0;
     }
 
+    .compare-note--quiet {
+        margin-top: 6px;
+        font-size: 0.72rem;
+        color: rgba(226, 232, 240, 0.6);
+        font-style: italic;
+        line-height: 1.35;
+    }
+
+    .compare-progress {
+        margin-top: 6px;
+        width: 50%;
+        min-width: 180px;
+    }
+
+    .compare-progress-label {
+        font-size: var(--fs-xs);
+        color: var(--text-tertiary);
+        line-height: 1.2;
+        margin-bottom: 4px;
+    }
+
+    .compare-progress-track {
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+    }
+
+    .compare-progress-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #60A5FA, #34D399);
+    }
+
     .compare-source {
         margin-top: var(--space-1);
         font-size: var(--fs-xs);
@@ -1210,6 +1615,70 @@ def render_custom_css():
         font-weight: var(--fw-semibold);
         color: var(--text-primary);
         line-height: 1.2;
+    }
+
+    .truth-gauge-wrap {
+        position: relative;
+        margin: 6px 0 2px 0;
+    }
+
+    .truth-gauge {
+        position: relative;
+        width: 100%;
+        height: 8px;
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid rgba(156, 163, 175, 0.22);
+        background: rgba(17, 24, 39, 0.55);
+    }
+
+    .truth-gauge-fill {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            rgba(239, 68, 68, 0.9) 0%,
+            rgba(239, 68, 68, 0.9) 49%,
+            rgba(245, 158, 11, 0.9) 50%,
+            rgba(245, 158, 11, 0.9) 69%,
+            rgba(34, 197, 94, 0.9) 70%,
+            rgba(34, 197, 94, 0.9) 100%
+        );
+    }
+
+    .truth-gauge-marker {
+        position: absolute;
+        top: -12px;
+        width: 0;
+        height: 0;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-top: 10px solid #F9FAFB;
+        filter: drop-shadow(0 0 2px rgba(17, 24, 39, 0.9));
+        transform: translateX(-7px);
+        z-index: 2;
+    }
+
+    .truth-gauge-marker::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 12px;
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #F9FAFB;
+        border: 1px solid rgba(17, 24, 39, 0.75);
+        transform: translateX(-50%);
+    }
+
+    .truth-gauge-scale {
+        display: flex;
+        justify-content: space-between;
+        color: var(--text-tertiary);
+        font-size: 0.7rem;
+        line-height: 1.2;
+        margin: 0 0 4px 0;
     }
 
     .truth-badges {
@@ -1466,12 +1935,12 @@ def render_sidebar(card_list, reset_callback=None):
     with st.sidebar:
         st.header("Financial Profile")
         st.markdown(
-        """<div class="muted-text">Rough estimates are enough. We use patterns in your spending, not exact numbers.</div>""",
+        """<div class="muted-text">Estimates are perfectly fine — no need to be exact.</div>""",
         unsafe_allow_html=True
         )
         #st.caption("Rough estimates are perfectly fine. We optimise for patterns, not precision.")
         with st.container(border=False):
-            salary = st.number_input("💰 Monthly Salary ₹", min_value=0, step=5000, key = "salary",format="%d", help="Your take-home pay after taxes and deductions.")
+            salary = st.number_input("💰 Monthly income ₹", min_value=0, step=5000, key = "salary",format="%d", help="Your take-home pay after taxes and deductions.")
             
             # with st.expander("👤 More About You"):
             #     h1,h2 = st.columns(2)
@@ -1486,7 +1955,7 @@ def render_sidebar(card_list, reset_callback=None):
             #st.markdown("---")
             sidebar_section_header(" Monthly Spends")
             st.markdown(
-                """<div class="muted-text">Start with rough values. You can fine-tune later.</div>""",
+                """<div class="muted-text">Not sure? Just give a rough idea. You can fine-tune later.</div>""",
                 unsafe_allow_html=True
             )
             # Keep these horizontal with compact labels above inputs.
@@ -1520,7 +1989,7 @@ def render_sidebar(card_list, reset_callback=None):
 
             
             # NEW: Advanced Section for Specialist Cards
-            with st.expander("Advanced Spends (Optional)"):
+            with st.expander("More spends"):
                 utilities = st.number_input("⚡ Utilities ₹", min_value=0, key="utilities", step=500 , help="Electricity, recharges, mobile bills")
                 upi = st.number_input("📱 UPI / Scan & Pay ₹", min_value=0, key="upi", step=500 , help="UPI transactions, QR payments")
 
@@ -1535,7 +2004,7 @@ def render_sidebar(card_list, reset_callback=None):
             st.markdown(
                 f"""
                 <div class="total-spend-chip">
-                    <div class="total-spend-label">Total Monthly Spend</div>
+                    <div class="total-spend-label">Total monthly spend</div>
                     <div class="total-spend-value">{format_inr(total)}</div>
                 </div>
                 """,
@@ -1553,7 +2022,7 @@ def render_sidebar(card_list, reset_callback=None):
             
             # We add "None" as the default option
             current_card_name = st.selectbox(
-                "I currently use:", 
+                "Compare against current card", 
                 options=["I don't have a card"] + card_list,
                 key="current_card_input" , help="Select to see how much more you could earn."
             )
@@ -1700,7 +2169,7 @@ def render_results(best_card, valid_cards_df, spends, verdict, truth_insight=Non
     #st.markdown("---")
     #Section 1
     
-    
+    # Top recommendation card code starts here
     with st.container(key="styled_container_feature_1" , border=False):
         st.markdown(
         """
@@ -1710,6 +2179,14 @@ def render_results(best_card, valid_cards_df, spends, verdict, truth_insight=Non
             """,unsafe_allow_html=True
                 )
     
+        hero_content = logic.build_hero_content(
+            best_card,
+            spends,
+            max_spend_dict=max_spend_dict,
+            wants_lounge=wants_lounge,
+            truth_insight=truth_insight,
+        )
+
         col_det,col_gap,col_action = st.columns([3,0.3,2])
         with col_det:
             st.markdown(
@@ -1722,57 +2199,52 @@ def render_results(best_card, valid_cards_df, spends, verdict, truth_insight=Non
                 
             value_class = "positive" if annual_net_saving >= 0 else "negative"
             st.markdown(
-                f"""<div><span class="best-card-value {value_class}">{format_inr(annual_net_saving)}/year</span></div>""",
+                f"""<div><span class="best-card-value {value_class}">{html.escape(hero_content["headline_value"])}</span></div>""",
                 unsafe_allow_html=True
             )
             st.markdown(
-                """<div class="best-card-support">Net value after annual fee.</div>""",
+                f"""<div class="best-card-support">{html.escape(hero_content["value_subline"])}</div>""",
                 unsafe_allow_html=True
             )
-            hero_category = html.escape(str(best_card.get("Reward Type", "Card")))
-            hero_status = html.escape(str(best_card.get("Status", "Stable")))
+            realization_label = html.escape(str(hero_content.get("hero_realization_label", "") or "Not set"))
+            fee_display = html.escape(str(hero_content.get("fee_display", "") or ""))
+            fee_detail = hero_content.get("fee_detail")
+            fee_hook = hero_content.get("fee_hook")
+            fee_detail_html = (
+                f'<div class="hero-mini-sub">{html.escape(str(fee_detail))}</div>' if fee_detail else ""
+            )
+            fee_hook_html = (
+                f'<div class="hero-mini-sub hero-mini-sub--muted">{html.escape(str(fee_hook))}</div>' if fee_hook else ""
+            )
             st.markdown(
                 f"""
-                <div class="hero-meta-row">
-                    <span class="hero-meta-chip">Category: {hero_category}</span>
-                    <span class="hero-meta-chip">Status: {hero_status}</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-            total_spend_value = float(spends.get("total", 0) or 0)
-            max_spend_dict = max_spend_dict or {}
-            if max_spend_dict and total_spend_value > 0:
-                top_category, top_value = next(iter(max_spend_dict.items()))
-                top_driver_label = f"{html.escape(str(top_category))} ({round((top_value / total_spend_value) * 100)}%)"
-            else:
-                top_driver_label = "Not enough spend data"
-            st.markdown(
-                f"""
-                <div class="hero-fact-row">
-                    <div class="hero-fact-pill">
-                        <div class="hero-fact-label">Spend considered</div>
-                        <div class="hero-fact-value">{format_inr(total_spend_value)}/month</div>
+                <div class="hero-story">
+                    <div class="hero-story-card hero-story-card--accent">
+                        <div class="hero-story-kicker">1. Why this card</div>
+                        <div class="hero-story-copy"><strong>{html.escape(hero_content["why_this_card"])}</strong></div>
                     </div>
-                    <div class="hero-fact-pill">
-                        <div class="hero-fact-label">Top driver</div>
-                        <div class="hero-fact-value">{top_driver_label}</div>
+                    <div class="hero-story-card">
+                        <div class="hero-story-kicker">2. Why it fits you</div>
+                        <div class="hero-story-copy">{html.escape(hero_content["fit_reason"])}</div>
+                        <div class="hero-story-context"><em>{html.escape(hero_content["context_line"])}</em></div>
                     </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-            travel_spend = spends.get("travel", 0)
-            travel_state = "Travel active" if travel_spend > 0 else "Travel limited"
-            lounge_state = "Lounge required" if wants_lounge else "No lounge filter"
-            travel_pill_class = "hero-fit-pill hero-fit-pill--active" if travel_spend > 0 else "hero-fit-pill"
-            lounge_pill_class = "hero-fit-pill hero-fit-pill--lounge" if wants_lounge else "hero-fit-pill"
-            st.markdown(
-                f"""
-                <div class="hero-fit-line">
-                    <span class="hero-fit-label">Travel fit</span>
-                    <span class="{travel_pill_class}">{travel_state}</span>
-                    <span class="{lounge_pill_class}">{lounge_state}</span>
+                    <div class="hero-story-card hero-story-card--compact">
+                        <div class="hero-story-kicker">3. Card snapshot</div>
+                        <table class="hero-mini-table">
+                            <tr>
+                                <th>Payout</th>
+                                <td><span class="hero-inline-badge">{realization_label}</span></td>
+                            </tr>
+                            <tr>
+                                <th>Fee</th>
+                                <td>
+                                    <span class="hero-mini-value">{fee_display}</span>
+                                    {fee_detail_html}
+                                    {fee_hook_html}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
                 """,
                 unsafe_allow_html=True
@@ -1806,9 +2278,13 @@ def render_results(best_card, valid_cards_df, spends, verdict, truth_insight=Non
                     </div>
                     """, unsafe_allow_html=True)
                     st.markdown(
-                    """<div class="meta-caption" style = "text-align:center;"><b>Affiliate link, no extra cost to you.</b></div>""",
+                    """<div class="best-card-confidence" style = "text-align:center;"><b>Affiliate link, no extra cost to you.</b></div>""",
                     unsafe_allow_html=True
                     )
+                st.markdown(
+                    """<div style="text-align:center;"><a href="#why-this-card-fits" class="hero-secondary-link">See why this fits</a></div>""",
+                    unsafe_allow_html=True
+                )
                 st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
 
             # 4. CARD: Link 
@@ -1819,32 +2295,45 @@ def render_results(best_card, valid_cards_df, spends, verdict, truth_insight=Non
     st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
 
     # Section 2 (restored): Why This Card Fits
+    st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
     with st.container(border=False):
+        st.markdown('<div id="why-this-card-fits"></div>', unsafe_allow_html=True)
+        explanation = logic.build_recommendation_explanation(
+            best_card,
+            spends,
+            max_spend_dict=max_spend_dict,
+            truth_insight=truth_insight,
+        )
         st.markdown(
         """
             <div class="section-header">
-            Why This Card Fits
+            Why this card fits you
             </div>
             """, unsafe_allow_html=True
         )
-        st.markdown("""<div class="section-subtitle">Why this card fits your current spending and fee profile.</div>""", unsafe_allow_html=True)
+        st.markdown(
+            """<div class="section-subtitle">Why it fits and what to watch.</div>""",
+            unsafe_allow_html=True
+        )
         st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
 
         with st.container(border=False):
-            st.markdown("""<div class="content-heading">Why this card works for you</div>""", unsafe_allow_html=True)
+            st.markdown("""<div class="content-heading">Rewards</div>""", unsafe_allow_html=True)
             st.markdown(
-                f"""<div class="money-alert--box money-alert-success"><b>Strength:</b> {best_card['Pro_Reason']}</div>""",
+                f"""<div class="money-alert--box money-alert-success"><div><strong>{html.escape(explanation["primary_reason"])}</strong></div><div class="money-alert-muted">{html.escape(explanation["supporting_reason"])}</div></div>""",
                 unsafe_allow_html=True
             )
             st.markdown('<div class="spacer-md"></div>', unsafe_allow_html=True)
-            st.markdown("""<div class="content-heading">Watch-outs</div>""", unsafe_allow_html=True)
+            st.markdown("""<div class="content-heading">Things to consider</div>""", unsafe_allow_html=True)
+            caution_body = f"<b>Watch out:</b> {html.escape(explanation['primary_caution'])}"
+            if explanation.get("secondary_caution"):
+                caution_body += f"<br><span class=\"money-alert-muted\">{html.escape(explanation['secondary_caution'])}</span>"
             st.markdown(
-                f"""<div class="money-alert--box money-alert-warning"><b>Limitations:</b> {best_card['Con_Reason']}</div>""",
+                f"""<div class="money-alert--box money-alert-warning">{caution_body}</div>""",
                 unsafe_allow_html=True
             )
             st.markdown('<div class="spacer-md"></div>', unsafe_allow_html=True)
-            st.markdown("""<div class="content-heading">Annual fee check</div>""", unsafe_allow_html=True)
-
+            st.markdown("""<div class="content-heading">Is the fee worth it?</div>""", unsafe_allow_html=True)
             fee_value = float(best_card.get("Fee", 0) or 0)
             spend_value = format_inr(spends.get("total", 0))
             fee_label = format_inr(fee_value)
@@ -1894,17 +2383,17 @@ def render_results(best_card, valid_cards_df, spends, verdict, truth_insight=Non
                 f"""
                 <div class="fee-outlook-card">
                     <div class="fee-outlook-head">
-                    <div class="fee-outlook-title">Annual fee recovery</div>
+                    <div class="fee-outlook-title">{html.escape(explanation["fee_verdict"])}</div>
                         <div class="{status_class}">{status_label}</div>
                     </div>
-                    <div class="fee-outlook-percent">Recovered this year: <strong>{recovered_value}</strong> of <strong>{fee_label}</strong></div>
-                    <div class="fee-outlook-bar">
+                    <div class="fee-outlook-percent">Estimated value recovered this year: <strong>{recovered_value}</strong> of <strong>{fee_label}</strong></div>
+                    <!-- <div class="fee-outlook-bar">
                         <div class="fee-outlook-fill" style="width: {recovered_pct}%;"></div>
-                    </div>
+                    </div> -->
                     <div class="fee-outlook-timebox">
                         <div class="fee-outlook-timebox-value">{month_estimate_line}</div>
                     </div>
-                    <div class="fee-outlook-note">{context_line}</div>
+                    <div class="method-note">{html.escape(explanation["methodology_line"])}</div>
                 </div>
                 """,
                 unsafe_allow_html=True
@@ -1914,28 +2403,24 @@ def render_results(best_card, valid_cards_df, spends, verdict, truth_insight=Non
 
     #st.divider()
     with st.container( border=False):
+        value_reality = logic.build_value_reality_insight(
+            best_card,
+            spends,
+            truth_insight=truth_insight,
+        )
         st.markdown(
         """
             <div class="section-header">
-                Popularity vs Personal Value
+                Real-world checks
             </div>
             """,unsafe_allow_html=True
                 )
-        st.markdown("""<div class="section-subtitle">Public rating vs your personal value from this card.</div>""", unsafe_allow_html=True)
+        st.markdown(
+            f"""<div class="section-subtitle">{html.escape(value_reality["lead_line"])}</div>""",
+            unsafe_allow_html=True
+        )
         st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
         with st.container(border=False):
-            # Dynamic class for verdict pill tone
-            if truth_insight and truth_insight.get("tone") == "danger":
-                v_class = "v-danger"
-            elif truth_insight and truth_insight.get("tone") == "success":
-                v_class = "v-success"
-            elif "Negative" in verdict:
-                v_class = "v-danger"
-            elif "Gem" in verdict or "Top" in verdict:
-                v_class = "v-success"
-            else:
-                v_class = "v-neutral"
-
             market_rating_raw = best_card.get("Market_Rating", 4.5)
             try:
                 market_rating_value = float(market_rating_raw)
@@ -1943,144 +2428,38 @@ def render_results(best_card, valid_cards_df, spends, verdict, truth_insight=Non
                     market_rating_value = 4.5
             except (TypeError, ValueError):
                 market_rating_value = 4.5
-
-            truth_score = None
-            truth_label = verdict
-            truth_badges_html = ""
-            truth_facts_html = ""
-            quick_win_html = ""
-            calc_quick = logic.calculate_card_yield_details(best_card, spends)
-            if truth_insight:
-                truth_score = truth_insight.get("score")
-                truth_label = truth_insight.get("label", verdict)
-                badge_chunks = []
-                for badge in truth_insight.get("badges", []):
-                    badge_name = html.escape(str(badge.get("name", "")))
-                    badge_tone = html.escape(str(badge.get("tone", "")))
-                    badge_chunks.append(
-                        f'<span class="truth-badge truth-badge--{badge_tone}">{badge_name}</span>'
-                    )
-                truth_badges_html = "".join(badge_chunks)
-
-                realization_type = str(truth_insight.get("realization_type", "") or "").strip().lower()
-                cap_type = str(truth_insight.get("cap_type", "") or "").strip().lower()
-                reward_value = truth_insight.get("reward_value", 1.0)
-                fee_waived = bool(truth_insight.get("fee_waived", False))
-                exclusion_categories = truth_insight.get("exclusion_categories", []) or []
-
-                realization_copy = {
-                    "cashback": "Rewards are direct cashback (easy to redeem).",
-                    "portal_locked": "Rewards are mainly usable inside issuer portal.",
-                    "travel_transfer": "Best value often needs travel transfer redemption.",
-                    "cobrand_wallet": "Rewards are mostly locked to partner ecosystem.",
-                    "co_brand_wallet": "Rewards are mostly locked to partner ecosystem.",
-                    "milestone_based": "Benefits depend on hitting milestone spend.",
-                    "basic_points": "Rewards are generic points with lower redemption ease.",
-                }
-                cap_copy = {
-                    "none": "No major reward cap is applied in this estimate.",
-                    "monthly_total": "Monthly total reward cap can limit upside.",
-                    "category_cap": "Category-specific caps can reduce realized value.",
-                    "utility_cap": "Utility rewards are capped for this card.",
-                    "coins_cap": "Coin caps can restrict effective rewards.",
-                    "milestone": "Milestone gates can delay/limit reward realization.",
-                }
-
-                fact_items = []
-                try:
-                    rv = float(reward_value)
-                    if abs(rv - 1.0) > 0.001:
-                        fact_items.append(
-                            f"Reward value adjusted to <strong>{rv:.2f}x</strong> to reflect realistic redemption."
-                        )
-                except (TypeError, ValueError):
-                    pass
-
-                if realization_type in realization_copy:
-                    fact_items.append(realization_copy[realization_type])
-                if cap_type in cap_copy:
-                    fact_items.append(cap_copy[cap_type])
-                if fee_waived:
-                    fact_items.append("At your current spend, annual fee is treated as waived.")
-                if exclusion_categories:
-                    exclusion_label = ", ".join(str(x).title() for x in exclusion_categories[:3])
-                    fact_items.append(f"Reward exclusions applied: {html.escape(exclusion_label)}.")
-
-                if fact_items:
-                    list_items = "".join(f"<li>{item}</li>" for item in fact_items[:3])
-                    truth_facts_html = f'<ul class="compare-facts">{list_items}</ul>'
-
-            # Quick-win insight strip: cap usage, fee waiver progress, top reward driver.
-            quick_items = []
-            monthly_cap = float(calc_quick.get("monthly_cap", 0) or 0)
-            monthly_realized = float(calc_quick.get("monthly_realized_reward", 0) or 0)
-            cap_type = str(calc_quick.get("cap_type", "none") or "none").lower()
-
-            if monthly_cap > 0 and monthly_cap < 900000:
-                cap_pct = max(0.0, min(100.0, (monthly_realized / monthly_cap) * 100)) if monthly_cap > 0 else 0.0
-                quick_items.append(
-                    f"Cap usage: <strong>{cap_pct:.0f}%</strong> of {format_inr(monthly_cap)}/month ({html.escape(cap_type.replace('_', ' '))})."
-                )
-            else:
-                quick_items.append("Cap usage: No meaningful monthly cap in this estimate.")
-
-            annual_spend = float(calc_quick.get("annual_total_spend", 0) or 0)
-            waiver_spend = float(calc_quick.get("fee_waiver_spend", 0) or 0)
-            fee_waived = bool(calc_quick.get("fee_waived", False))
-            if waiver_spend > 0 and waiver_spend < 9e8:
-                if fee_waived:
-                    quick_items.append(
-                        f"Fee waiver progress: <strong>achieved</strong> ({format_inr(annual_spend)} vs threshold {format_inr(waiver_spend)})."
-                    )
-                else:
-                    waiver_pct = max(0.0, min(100.0, (annual_spend / waiver_spend) * 100))
-                    quick_items.append(
-                        f"Fee waiver progress: <strong>{waiver_pct:.0f}%</strong> ({format_inr(annual_spend)} of {format_inr(waiver_spend)})."
-                    )
-
-            cat_rewards = calc_quick.get("category_monthly_reward", {}) or {}
-            if isinstance(cat_rewards, dict) and cat_rewards:
-                top_cat, top_val = max(cat_rewards.items(), key=lambda kv: float(kv[1] or 0))
-                top_annual = float(top_val or 0) * 12
-                if top_annual > 0:
-                    quick_items.append(
-                        f"Top reward driver: <strong>{html.escape(str(top_cat).title())}</strong> contributes about {format_inr(top_annual)}/year."
-                    )
-
-            if quick_items:
-                quick_win_html = f'<ul class="compare-facts">{"".join(f"<li>{x}</li>" for x in quick_items[:3])}</ul>'
-
-            truth_score_html = ""
-            if truth_score is not None:
-                truth_score_html = (
-                    f'<div class="truth-score-line">'
-                    f'<span class="truth-score-label">Truth Score</span>'
-                    f'<span class="truth-score-value">{int(truth_score)}/100</span>'
-                    f'</div>'
+            card_html = []
+            for item in value_reality["cards"]:
+                progress_html = ""
+                progress_pct = item.get("progress_pct")
+                if progress_pct is not None:
+                    progress_int = max(0, min(100, int(round(progress_pct))))
+                    progress_label = html.escape(str(item.get("progress_label") or f"{progress_int}% reached"))
+                    progress_html = f"""
+<div class="compare-progress">
+  <div class="compare-progress-label">{progress_label}</div>
+  <div class="compare-progress-track">
+    <div class="compare-progress-fill" style="width: {progress_int}%"></div>
+  </div>
+</div>
+"""
+                note_html = ""
+                if item.get("note"):
+                    note_html = f'<div class="compare-note compare-note--quiet">{html.escape(item["note"])}</div>'
+                card_html.append(
+                    f"""<div class="compare-card">
+<div class="compare-title">{html.escape(item["title"])}</div>
+<div class="compare-note">{html.escape(item["body"])}</div>
+{progress_html}
+{note_html}
+</div>"""
                 )
 
             comparison_html = f"""
 <div class="compare-shell">
-  <div class="compare-card">
-    <span class="compare-badge">Popularity</span>
-    <div class="compare-title">Internet Rating</div>
-    <div class="compare-value">{market_rating_value:.1f}/5 ⭐</div>
-    <div class="compare-note">How people rate this card in public listings.</div>
-    <div class="compare-source">Average public rating from affiliate listings (not personalized).</div>
-  </div>
-
-  <div class="compare-card">
-    <span class="compare-badge">Personal Value</span>
-    <div class="compare-title">CredLens Verdict</div>
-    <div class="verdict-box {v_class}">{html.escape(str(truth_label))}</div>
-    {truth_score_html}
-    <div class="truth-badges">{truth_badges_html}</div>
-    {quick_win_html}
-    <div class="compare-note">Based on your spending, realistic reward value, caps, and annual fee impact.</div>
-    {truth_facts_html}
-    <div class="compare-source">Personalized estimate from reward math, redemption friction, cap rules, and fee waiver checks.</div>
-  </div>
+  {''.join(card_html)}
 </div>
+<div class="secondary-note">Public rating: {market_rating_value:.1f}/5 from general listings</div>
 """
             st.markdown(comparison_html, unsafe_allow_html=True)
 
@@ -2092,90 +2471,82 @@ def render_results(best_card, valid_cards_df, spends, verdict, truth_insight=Non
         st.markdown(
         """
             <div class="section-header">
-                Current Card Comparison
+                Switch or stay?
             </div>
             """,unsafe_allow_html=True
                 )
-        st.markdown("""<div class="section-subtitle">Compare your current card with the top recommendation for you.</div>""", unsafe_allow_html=True)
+        st.markdown(
+            """<div class="section-subtitle">A plain yes/no on switching.</div>""",
+            unsafe_allow_html=True,
+        )
         st.markdown('<div class="spacer-sm"></div>', unsafe_allow_html=True)
 
-        with st.expander("Should you switch your current card?", expanded=True):
-            # --- NEW: SMART CONTEXTUAL ALERTS ---
-            if comparison_data:
-            
-                # 1. THE "NO CARD" NUDGE
-                if comparison_data['type'] == 'no_card':
-                    st.info(f"""Choose your current card above, or start with **{best_card['Card Name']}** based on your spending.""")
-                    #st.markdown(f"### Start your credit card journey with ***{best_card['Card Name']}***! ")
+        if comparison_data:
 
+            if comparison_data['type'] == 'no_card':
+                st.info(
+                    f"You can start with **{best_card['Card Name']}**. It is a strong fit for your current spending."
+                )
 
-                # 2. THE "SAME CARD" VALIDATION
-                elif comparison_data['type'] == 'same_card' and comparison_data.get("current_card_name") == best_card['Card Name']:
-                    st.success(f"You already use **{best_card['Card Name']}**. It still looks like a strong fit for your current spending.")
-                
-                elif comparison_data['type'] == 'same_card' and comparison_data.get("current_card_name") != best_card['Card Name']:
-                    curr_name = comparison_data.get("current_card_name", "current card")
-                    st.success(f"Your current **{curr_name}** card is performing similarly for your current spending.")
+            elif comparison_data['type'] == 'same_card' and comparison_data.get("current_card_name") == best_card['Card Name']:
+                st.success(
+                    f"Stay with **{best_card['Card Name']}**. It still looks like the best fit for your current spending."
+                )
 
-                # 3. THE "lounge access CARD" VALIDATION
-                elif comparison_data['type'] == 'no_card_lounge':
-                    st.info(f"**{comparison_data['current_card_name']}** does not offer lounge access with your selected filter. **{best_card['Card Name']}** is the closest match that does.")
+            elif comparison_data['type'] == 'same_card' and comparison_data.get("current_card_name") != best_card['Card Name']:
+                curr_name = comparison_data.get("current_card_name", "current card")
+                st.success(
+                    f"Stay with **{curr_name}** for now. The top card is not clearly better yet."
+                )
 
-                # 3. THE "SWITCH" WARNING (Existing Logic)
-                elif comparison_data['type'] == 'switch':
-                    curr_name = comparison_data['current_card_name']
-                    diff = comparison_data['diff']
+            elif comparison_data['type'] == 'no_card_lounge':
+                st.info(
+                    f"Your selected **{comparison_data['current_card_name']}** does not match the lounge filter. **{best_card['Card Name']}** is the closest fit."
+                )
 
-                    # Dynamic analogy
-                    if diff < 2000:
-                        analogy = "Roughly offsets one to two casual dining bills."
-                    elif diff < 5000:
-                        analogy = "Roughly offsets a year of streaming and Wi-Fi bills."
-                    elif diff < 10000:
-                        analogy = "Roughly offsets a low-cost domestic flight."
-                    elif diff < 25000:
-                        analogy = "Roughly offsets a mid-range phone purchase."
-                    elif diff == 0:
-                        analogy = "Results are effectively similar."
-                    else:
-                        analogy = "Could materially offset a larger annual expense."
+            elif comparison_data['type'] == 'switch':
+                curr_name = comparison_data['current_card_name']
+                diff = comparison_data['diff']
 
-                    if diff > 0:
-                        curr_name_safe = html.escape(str(curr_name))
-                        best_card_name_safe = html.escape(str(best_card["Card Name"]))
-                        diff_label = format_inr(diff)
-                        current_savings_label = format_inr(comparison_data.get("current_savings", 0))
-                        best_savings_label = format_inr(best_card.get("Net Savings", 0))
-                        analogy_line = html.escape(str(analogy)).rstrip(".")
+                if diff < 2000:
+                    verdict_title = "Close call"
+                elif diff < 5000:
+                    verdict_title = "Worth considering"
+                elif diff < 25000:
+                    verdict_title = "Strong case to switch"
+                else:
+                    verdict_title = "Worth switching?"
 
-                        st.markdown(f"""
-                        <div class="money-alert">
-                            <div class="money-alert-title">Switch Opportunity</div>
-                            <div class="opportunity-amount">{diff_label}/year</div>
-                            <div class="opportunity-summary">
-                                Switching from <span class="highlight-card">{curr_name_safe}</span> to <span class="highlight-card">{best_card_name_safe}</span> may add this value annually.
-                            </div>
-                            <ul class="opportunity-facts">
-                                <li><span class="opportunity-label">Current card estimate:</span> {current_savings_label}/year</li>
-                                <li><span class="opportunity-label">Recommended estimate:</span> {best_savings_label}/year</li>
-                                <li><span class="opportunity-label">Likely impact:</span> {analogy_line} per year.</li>
-                            </ul>
-                            <div class="money-alert-muted">Based on current monthly inputs and reward-rate math.</div>
+                if diff > 0:
+                    curr_name_safe = html.escape(str(curr_name))
+                    best_card_name_safe = html.escape(str(best_card["Card Name"]))
+                    diff_label = format_inr(diff)
+                    current_savings_label = format_inr(comparison_data.get("current_savings", 0))
+                    best_savings_label = format_inr(best_card.get("Net Savings", 0))
+
+                    st.markdown(f"""
+                    <div class="money-alert">
+                        <div class="money-alert-title money-alert-title--verdict">{verdict_title}</div>
+                        <div class="opportunity-summary">
+                            You could gain <span class="highlight-card">{diff_label}/year</span> by moving from <span class="highlight-card">{curr_name_safe}</span> to <span class="highlight-card">{best_card_name_safe}</span>.
                         </div>
-                        """, unsafe_allow_html=True)
-                        st.markdown("""<div class="content-heading">Top 3 recommended cards for you</div>""", unsafe_allow_html=True)
-                        render_top3_recommendation_cards(valid_cards_df)
-                    else:
-                        # Negative Diff = The Current Card is ACTUALLY BETTER than our algorithm's pick?
-                        # (Rare, but happens if the user selected a Super Premium card we filtered out by salary, or logic quirks)
-                        curr_name_safe = html.escape(str(curr_name))
-                        best_name_safe = html.escape(str(best_card["Card Name"]))
-                        current_savings = format_inr(comparison_data["current_savings"])
-                        best_savings = format_inr(best_card["Net Savings"])
-                        st.markdown(
-                            f"""✅ <b>Current card remains competitive.</b> Your current card (<b>{curr_name_safe}</b>) is estimated at {current_savings} vs <b>{best_name_safe}</b> at {best_savings}.""",
-                            unsafe_allow_html=True
-                        )
+                        <ul class="opportunity-facts">
+                            <li><span class="opportunity-label">Your card:</span> {current_savings_label}/year</li>
+                            <li><span class="opportunity-label">Recommended card:</span> {best_savings_label}/year</li>
+                        </ul>
+                        <div class="money-alert-muted">Based on your current spending.</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.markdown("""<div class="content-heading">Also consider these alternatives</div>""", unsafe_allow_html=True)
+                    render_top3_recommendation_cards(valid_cards_df)
+                else:
+                    curr_name_safe = html.escape(str(curr_name))
+                    best_name_safe = html.escape(str(best_card["Card Name"]))
+                    current_savings = format_inr(comparison_data["current_savings"])
+                    best_savings = format_inr(best_card["Net Savings"])
+                    st.success(
+                        f"Stay with **{curr_name_safe}** for now. It is estimated at {current_savings}/year versus {best_name_safe} at {best_savings}/year."
+                    )
 
 
 
@@ -2192,7 +2563,7 @@ def render_results(best_card, valid_cards_df, spends, verdict, truth_insight=Non
                 f"""
                 <div class="final-cta-card">
                     <div class="final-cta-title">Ready to apply?</div>
-                    <div class="final-cta-note"><strong>{html.escape(str(best_card['Card Name']))}</strong> is your best match based on your current inputs.</div>
+                    <div class="final-cta-note"><strong>{html.escape(str(best_card['Card Name']))}</strong> fits your current spending best.</div>
                     <div class="apply-cta-wrap" style="--apply-btn-color: {color}; margin-top: 0;">
                         <a href="{link}" target="_blank" class="apply-cta-link">
                             <button class="apply-btn">Apply for {html.escape(str(best_card['Card Name']))}</button>
@@ -2202,15 +2573,15 @@ def render_results(best_card, valid_cards_df, spends, verdict, truth_insight=Non
                 """,
                 unsafe_allow_html=True
             )
-        st.markdown("""<div class="assumption-note">Want to see how this was calculated? Open optional details below.</div>""", unsafe_allow_html=True)
+        st.markdown("""<div class="assumption-note">The full calculation is below.</div>""", unsafe_allow_html=True)
 
-    with st.expander("Optional: see full calculation details"):
+    with st.expander("Optional: see how this was calculated"):
         st.markdown(
-            """<div class="assumption-note">These estimates use your monthly spending, published reward rates, annual fees, and simple cap assumptions.</div>""",
+            """<div class="assumption-note">Here is how we estimated this.</div>""",
             unsafe_allow_html=True
         )
         st.markdown(
-            """<div class="muted-text">We calculate rewards category by category and then subtract the annual fee.</div>""",
+            """<div class="muted-text">We estimate rewards by category, then subtract the fee.</div>""",
             unsafe_allow_html=True
         )
         calc_details = logic.calculate_card_yield_details(best_card, spends)
@@ -2247,46 +2618,60 @@ def render_results(best_card, valid_cards_df, spends, verdict, truth_insight=Non
             total_estimated_rewards = float(calc_details.get("annual_reward_before_fee", 0))
             annual_fee = float(calc_details.get("effective_fee", best_card.get("Fee", 0)))
             net_estimate = float(calc_details.get("net_savings", 0))
+            top_row = max(breakdown_rows, key=lambda row: row["Estimated Reward"])
+            top_category = str(top_row["Category"])
+            top_reward = format_inr(top_row["Estimated Reward"])
+            top_spend = format_inr(top_row["Annual Spend"])
 
             m1, m2, m3 = st.columns(3)
-            m1.metric("Estimated Rewards / Year", format_inr(total_estimated_rewards))
-            m2.metric("Annual Fee", format_inr(annual_fee))
-            m3.metric("Estimated Net Value", format_inr(net_estimate))
-
-            # Audit strip: quick visibility into core cap/milestone/fee-waiver assumptions.
-            monthly_realized = format_inr(calc_details.get("monthly_realized_reward", 0))
-            monthly_cap_val = calc_details.get("monthly_cap", 0)
-            cap_type_raw = str(calc_details.get("cap_type", "none") or "none")
-            cap_type_label = cap_type_raw.replace("_", " ").title()
-            cap_note = "No cap applied"
-            try:
-                monthly_cap_num = float(monthly_cap_val)
-                if monthly_cap_num > 0 and monthly_cap_num < 900000:
-                    cap_note = f"Cap: {format_inr(monthly_cap_num)}/month ({cap_type_label})"
-                else:
-                    cap_note = f"Cap: {cap_type_label}"
-            except (TypeError, ValueError):
-                cap_note = f"Cap: {cap_type_label}"
-
-            milestone_bonus = float(calc_details.get("milestone_bonus_annual", 0))
-            milestone_note = f"Milestone bonus: {format_inr(milestone_bonus)}/year"
-            fee_waived = bool(calc_details.get("fee_waived", False))
-            fee_note = "Fee waiver: Applied" if fee_waived else "Fee waiver: Not applied"
+            m1.metric("Estimated rewards", format_inr(total_estimated_rewards))
+            m2.metric("Fee", format_inr(annual_fee))
+            m3.metric("After fee", format_inr(net_estimate))
 
             st.markdown(
                 f"""
                 <div class="assumption-note">
-                    <strong>Calculation audit:</strong> Realized reward {monthly_realized}/month • {html.escape(cap_note)} • {milestone_note} • {fee_note}
+                    <strong>Quick summary:</strong> Your strongest category is <strong>{html.escape(top_category)}</strong> at {top_reward} a year on {top_spend} of spend.
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
+            st.markdown("""<div class="content-heading">Detailed breakdown</div>""", unsafe_allow_html=True)
             display_breakdown = breakdown_df.copy()
             display_breakdown["Annual Spend"] = display_breakdown["Annual Spend"].apply(format_inr)
             display_breakdown["Reward Rate"] = display_breakdown["Reward Rate"].apply(lambda x: f"{x:.2f}%")
             display_breakdown["Estimated Reward"] = display_breakdown["Estimated Reward"].apply(format_inr)
 
             st.dataframe(display_breakdown, use_container_width=True, hide_index=True)
+
+            # Audit strip: quick visibility into core cap/milestone/fee-waiver assumptions.
+            monthly_realized = format_inr(calc_details.get("monthly_realized_reward", 0))
+            monthly_cap_val = calc_details.get("monthly_cap", 0)
+            cap_type_raw = str(calc_details.get("cap_type", "none") or "none")
+            cap_type_label = cap_type_raw.replace("_", " ").title()
+            cap_note = "Reward limit: none"
+            try:
+                monthly_cap_num = float(monthly_cap_val)
+                if monthly_cap_num > 0 and monthly_cap_num < 900000:
+                    cap_note = f"Reward limit: {format_inr(monthly_cap_num)}/month ({cap_type_label})"
+                else:
+                    cap_note = f"Reward limit: {cap_type_label}"
+            except (TypeError, ValueError):
+                cap_note = f"Reward limit: {cap_type_label}"
+
+            milestone_bonus = float(calc_details.get("milestone_bonus_annual", 0))
+            milestone_note = f"Milestone bonus: {format_inr(milestone_bonus)}/year"
+            fee_waived = bool(calc_details.get("fee_waived", False))
+            fee_note = "Fee waiver: applied" if fee_waived else "Fee waiver: not applied"
+
+            st.markdown(
+                f"""
+                <div class="assumption-note">
+                    <strong>Quick audit:</strong> {monthly_realized}/month realized • {html.escape(cap_note)} • {milestone_note} • {fee_note}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
         else:
             st.info("Add monthly spend inputs to see the calculation breakdown.")
