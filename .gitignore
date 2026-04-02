@@ -4,6 +4,8 @@
 .streamlit/secrets.toml
 **/*.toml
 .env
+To Do.txt
+archive/
 
 # 2. Ignore Python Cache (Junk files)
 __pycache__/
