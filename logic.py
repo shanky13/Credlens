@@ -338,7 +338,7 @@ def build_recommendation_explanation(card, spends, max_spend_dict=None, truth_in
     if exclusion_categories:
         caution_lines.append("Some spending may not earn rewards.")
     if fee > 0 and not fee_waived:
-        caution_lines.append("The annual fee still matters.")
+        caution_lines.append("The annual fee requires more spend to be waived off.")
     if realization_type in {"portal_locked", "cobrand_wallet", "co_brand_wallet", "basic_points"}:
         caution_lines.append("Redemption may take extra steps.")
 
@@ -357,7 +357,7 @@ def build_recommendation_explanation(card, spends, max_spend_dict=None, truth_in
     else:
         methodology_line = "Includes fee, caps, and limits."
 
-    fee_verdict = "Fee looks worth it"
+    fee_verdict = "Fee looks worth it for your spends."
     if fee <= 0 or fee_waived:
         fee_verdict = "Fee is not a blocker"
     elif net_savings <= 0:
